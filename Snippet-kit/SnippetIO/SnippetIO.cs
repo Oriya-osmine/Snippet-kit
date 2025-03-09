@@ -25,7 +25,7 @@ public class CodeSnippet
         {
             Id = Snippet.Element("Id")?.Value ?? throw new Exception("null Id"),
             Code = Snippet.Element("Code")?.Value ?? "",
-            Shortcut = Snippet.Element("Shortcut")?.Value ?? ""
+            Shortcut = Snippet.Element("Code")?.Value ?? ""
 
         };
     }
