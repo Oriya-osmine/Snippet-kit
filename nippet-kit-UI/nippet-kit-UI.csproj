@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <RootNamespace>nippet_kit_UI</RootNamespace>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+	  <BaseOutputPath>$(SolutionDir)\bin\</BaseOutputPath>
+	  <OutputPath>$(SolutionDir)\bin\</OutputPath>
+	  <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+	  <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+	  <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
+
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Snippet-kit\Snippet-kit.csproj" />
+  </ItemGroup>
+
+</Project>
