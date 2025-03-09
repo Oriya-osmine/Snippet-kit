@@ -16,15 +16,17 @@ namespace SnippetIO;
 public class CodeSnippet
 {
     public required string Id { get; init; }
-
-    [XmlElement(ElementName = "Code")]
     public required string Code { get; init; }
+    public required string Shortcut { get; init; }
+
     internal static CodeSnippet GetCodeSnippet(XElement Snippet)
     {
         return new CodeSnippet()
         {
             Id = Snippet.Element("Id")?.Value ?? throw new Exception("null Id"),
-            Code = Snippet.Element("Code")?.Value ?? throw new Exception("null Code")
+            Code = Snippet.Element("Code")?.Value ?? "",
+            Shortcut = Snippet.Element("Shortcut")?.Value ?? ""
+
         };
     }
     internal static IEnumerable<XElement> GetCodeSnippetElement(CodeSnippet Snippet)
@@ -32,7 +34,8 @@ public class CodeSnippet
         return new XElement[]
         {
         new XElement("Id", Snippet.Id),
-        new XElement("Code", Snippet.Code)
+        new XElement("Code", Snippet.Code),
+        new XElement("Shortcut", Snippet.Shortcut)
         };
     }
     public override string ToString()
