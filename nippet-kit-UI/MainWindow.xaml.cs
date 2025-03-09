@@ -1,23 +1,32 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
-namespace nippet_kit_UI;
-
-/// <summary>
-/// Interaction logic for MainWindow.xaml
-/// </summary>
-public partial class MainWindow : Window
+namespace SnippetIO
 {
-    public MainWindow()
+    public partial class MainWindow : Window
     {
-        InitializeComponent();
+        private StringBuilder shortcutBuilder = new StringBuilder();
+
+        public MainWindow()
+        {
+            InitializeComponent();
+            NewShortcutBox.PreviewKeyDown += OnShortcutKeyDown;
+        }
+
+        private void OnShortcutKeyDown(object sender, KeyEventArgs e)
+        {
+            e.Handled = true; // מונע הכנסת טקסט לתיבה
+
+            if (e.Key == Key.System || e.Key == Key.LWin || e.Key == Key.RWin)
+                return;
+
+            if (shortcutBuilder.Length > 0)
+                shortcutBuilder.Append(" + ");
+
+            shortcutBuilder.Append(e.Key.ToString());
+            NewShortcutBox.Text = shortcutBuilder.ToString();
+        }
     }
 }
