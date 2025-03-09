@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SnippetIOApi;
 
-public interface ISnippetIO
+public interface ISnippetIO : IObservable
 {
     void Create(CodeSnippet add);
     CodeSnippet Read(string id);

@@ -4,6 +4,19 @@
              xmlns:local="clr-namespace:nippet_kit_UI"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        
+        <!--Brush Colors-->
+        <Color x:Key="PrimaryColor">#FF171717</Color>
+        <Color x:Key="SecondaryColor">MediumPurple</Color>
+        <Color x:Key="TextColor">AliceBlue</Color>
+        <Color x:Key="ContainerColor">DarkSlateBlue</Color>
+        <Color x:Key="SelectedColor">black</Color>
+
+        <SolidColorBrush x:Key="PrimaryBrush" Color="#FF171717" />
+        <SolidColorBrush x:Key="SecondaryBrush" Color="MediumPurple" />
+        <SolidColorBrush x:Key="TextBrush" Color="AliceBlue" />
+        <SolidColorBrush x:Key="ContainerBrush" Color="DarkSlateBlue" />
+        <SolidColorBrush x:Key="SelectedColorBrush" Color="black" />
+
     </Application.Resources>
 </Application>

@@ -48,6 +48,8 @@ public class CodeSnippet
 internal class SnippetIO : SnippetIOApi.ISnippetIO
 {
     readonly static string Snippetsxml = "Snippets.xml";
+    internal static SnippetIOApi.ObserverManager Observers = new(); //stage 5
+
     public void Create(CodeSnippet newSnippet)
     {
         List<CodeSnippet> CodeSnippets = ReadAll().ToList();
@@ -58,6 +60,8 @@ internal class SnippetIO : SnippetIOApi.ISnippetIO
         CodeSnippetsRootElem.Add(new XElement("CodeSnippet", CodeSnippet.GetCodeSnippetElement(newSnippet)));
         // Save the updated XML
         XMLTools.SaveListToXMLElement(CodeSnippetsRootElem, Snippetsxml);
+        Observers.NotifyListUpdated();
+        Observers.NotifyItemUpdated(newSnippet.Id);
     }
 
     public CodeSnippet Read(string id)
@@ -84,6 +88,9 @@ internal class SnippetIO : SnippetIOApi.ISnippetIO
 
         CodeSnippetsRootElem.Add(new XElement("CodeSnippet", CodeSnippet.GetCodeSnippetElement(update)));
         XMLTools.SaveListToXMLElement(CodeSnippetsRootElem, Snippetsxml);
+        Observers.NotifyItemUpdated(update.Id);
+        Observers.NotifyListUpdated();
+
     }
 
     public void Delete(string delete)
@@ -98,6 +105,18 @@ internal class SnippetIO : SnippetIOApi.ISnippetIO
 
         CodeSnippetElement.Remove();
         XMLTools.SaveListToXMLElement(root, Snippetsxml);
-    }
+        Observers.NotifyItemUpdated(delete);
+        Observers.NotifyListUpdated();
 
+    }
+    #region Observers
+    public void AddObserver(Action listObserver) =>
+        Observers.AddListObserver(listObserver);
+    public void AddObserver(string id, Action observer) =>
+        Observers.AddObserver(id, observer);
+    public void RemoveObserver(Action listObserver) =>
+        Observers.RemoveListObserver(listObserver);
+    public void RemoveObserver(string id, Action observer) =>
+        Observers.RemoveObserver(id, observer);
+    #endregion Observers
 }
