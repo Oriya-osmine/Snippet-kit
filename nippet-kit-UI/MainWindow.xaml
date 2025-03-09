@@ -14,7 +14,7 @@
             <!-- Main content -->
         </Grid.ColumnDefinitions>
 
-        <!-- 📜 Snippet List (Left Side) -->
+        <!-- Snippet List (Left Side) -->
         <ListBox Grid.Column="0" Margin="5"
                  ItemsSource="{Binding Snippets}" 
                  DisplayMemberPath="Title"
@@ -22,10 +22,10 @@
                  BorderBrush="#3C3C3C" BorderThickness="1"
                  FontSize="14" />
 
-        <!-- 📌 Right Side Panel -->
+        <!-- Right Side Panel -->
         <StackPanel Grid.Column="1" Margin="10">
 
-            <!-- ⌨ Key Capture TextBox -->
+            <!-- Key Capture TextBox -->
             <TextBox Name="ShortcutInputBox"
                      Text="Press a key to set a shortcut..."
                      HorizontalAlignment="Stretch"
@@ -40,10 +40,10 @@
 
             <Separator Background="#3C3C3C" Margin="5"/>
 
-            <!-- ➕ Add New Shortcut Section -->
+            <!-- Add New Shortcut Section -->
             <TextBlock Text="Add New Keyboard Shortcut" FontSize="16" FontWeight="Bold" Margin="5"/>
 
-            <!-- ⌨ Shortcut Key Selection -->
+            <!-- Shortcut Key Selection -->
             <TextBlock Text="Select a Keyboard Shortcut:" FontSize="14" Margin="5"/>
             <TextBox Name="NewShortcutBox"
                      Text="Press a key..."
@@ -53,7 +53,7 @@
                      BorderBrush="#3C3C3C" BorderThickness="1"
                      IsReadOnly="True"/>
 
-            <!-- 🎯 Action Type Selection -->
+            <!-- Action Type Selection -->
             <TextBlock Text="Select Action Type:" FontSize="14" Margin="5"/>
             <ComboBox Name="ActionTypeComboBox" Height="30"
                       Background="#252526" Foreground="White"
@@ -63,7 +63,7 @@
                 <ComboBoxItem Content="Run Command"/>
             </ComboBox>
 
-            <!-- 📝 Snippet Content Input -->
+            <!-- Snippet Content Input -->
             <TextBlock Text="Enter Snippet Content:" FontSize="14" Margin="5"/>
             <TextBox Name="SnippetContentBox"
                      Height="60" 
@@ -72,7 +72,7 @@
                      BorderBrush="#3C3C3C"
                      Padding="5"/>
 
-            <!-- 🔘 Save Button -->
+            <!-- Save Button -->
             <Button Content="Save Shortcut" 
                     Background="#007ACC"
                     Foreground="White"
