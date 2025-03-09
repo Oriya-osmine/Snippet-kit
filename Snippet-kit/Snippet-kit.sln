@@ -5,7 +5,7 @@ VisualStudioVersion = 17.13.35825.156 d17.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Snippet-kit", "Snippet-kit.csproj", "{08B068C7-D361-4A24-BE25-C18EC67E80C5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nippet-kit-UI", "..\nippet-kit-UI\nippet-kit-UI.csproj", "{8BA55258-0E41-4D24-8A99-DAE26D439A07}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Snippet-kit-UI", "..\nippet-kit-UI\Snippet-kit-UI.csproj", "{8BA55258-0E41-4D24-8A99-DAE26D439A07}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
