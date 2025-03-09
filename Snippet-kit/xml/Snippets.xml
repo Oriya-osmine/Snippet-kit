@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Snippets.xml>
+  <CodeSnippet>
+    <Id>12</Id>
+    <Code>Hello, World!</Code>
+  </CodeSnippet>
+  <CodeSnippet>
+    <Id>1</Id>
+    <Code>blaa, World!</Code>
+  </CodeSnippet>
+</Snippets.xml>

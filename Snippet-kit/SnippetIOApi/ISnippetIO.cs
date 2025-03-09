@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 
 namespace SnippetIOApi;
 
-interface ISnippetIO
+public interface ISnippetIO
 {
     void Create(CodeSnippet add);
     CodeSnippet Read(string id);
+    IEnumerable<CodeSnippet> ReadAll();
     void Update(CodeSnippet id);
     void Delete(string id);
 }
