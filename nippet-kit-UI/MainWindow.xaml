@@ -120,7 +120,7 @@
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Button Content="🗑️" Click="DeleteItemButton_Click"
-                        Padding="5" Margin="5" Background="Red" Foreground="White"/>
+                        Padding="5" Margin="5" Background="Red" Foreground="White" CommandParameter="{Binding Id}"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -129,7 +129,7 @@
                     <DataGridTemplateColumn Width="Auto">
                         <DataGridTemplateColumn.Header>
                             <Button Content="💾" Click="SaveAllButton_Click" Padding="5"
-                                    Background="Green" Foreground="White"/>
+                                    Background="Green" Foreground="White" />
                         </DataGridTemplateColumn.Header>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>

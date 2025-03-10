@@ -127,36 +127,27 @@ public partial class MainWindow : Window
     {
         // Get the clicked button
         Button button = (sender as Button)!;
-        // Find the DataGridRow that contains the clicked button
-        var row = FindParent<DataGridRow>(button!);
-        if (row != null)
+
+        // Get the CodeSnippet object for this row (using DataContext)
+        string itemId = (string)button.CommandParameter;
+
+        var snippetToDelete = CodeSnippetsList.FirstOrDefault(s => s.Id == itemId);
+        if (snippetToDelete != null)
         {
-            // Get the CodeSnippet object for this row (using DataContext)
-            if (row.DataContext is SnippetIO.CodeSnippet snippet)
+            var result = MessageBox.Show("Do you want to delete the snippet?", "Confirm deletion", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
             {
-                var snippetToDelete = CodeSnippetsList.FirstOrDefault(s => s.Id == snippet.Id);
-                if (snippetToDelete != null)
-                {
-                    var result = MessageBox.Show("Do you want to delete the snippet?", "Confirm deletion", MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-                    if (result == MessageBoxResult.Yes)
-                    {
-                        SetDefaultItems();
-                        s_SnippetIO.Delete(snippetToDelete.Id);
-                        QueryCodeSnippetsList();
-                        SetDefaultItems();
-                    }
-                    else
-                    {
-                        MessageBox.Show("Snippet not deleted.", "Cancelled", MessageBoxButton.OK, MessageBoxImage.Information);
-                    }
-
-                }
+                SetDefaultItems();
+                s_SnippetIO.Delete(snippetToDelete.Id);
+                QueryCodeSnippetsList();
+                SetDefaultItems();
             }
-        }
-        else
-        {
-            //MessageBox.Show("Could not find parent row.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            else
+            {
+                MessageBox.Show("Snippet not deleted.", "Cancelled", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
         }
     }
     private void DeleteAllButton_Click(object sender, RoutedEventArgs e)
