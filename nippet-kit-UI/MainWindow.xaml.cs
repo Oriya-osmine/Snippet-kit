@@ -164,6 +164,10 @@ public partial class MainWindow : Window
         }
 
     }
+    private void Add_Button(object sender, RoutedEventArgs e)
+    {
+        
+    }
     #endregion Button Events
     #endregion Events
     #region Helpers
@@ -387,5 +391,6 @@ public partial class MainWindow : Window
 
     private void CodeSnippetsListObserver() => QueryCodeSnippetsList();
     #endregion Observer Operations
+
 
 }
