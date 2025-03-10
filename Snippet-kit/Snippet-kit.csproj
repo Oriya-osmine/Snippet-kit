@@ -15,8 +15,4 @@
 	<RootNamespace />
   </PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="InterceptKeys\" />
-  </ItemGroup>
-
 </Project>

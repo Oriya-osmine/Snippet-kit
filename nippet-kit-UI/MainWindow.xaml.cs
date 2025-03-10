@@ -1,7 +1,10 @@
 ﻿using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Animation;
 
 namespace SnippetIO;
 
@@ -16,51 +19,26 @@ public partial class MainWindow : Window
         NewShortcutBox.PreviewKeyDown += OnShortcutKeyDown;
         QueryCodeSnippetsList();
     }
+    #region Events
     #region Window Events
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
-        s_SnippetIO.AddObserver(CodeSnippetsListObserver);
+        //s_SnippetIO.AddObserver(CodeSnippetsListObserver);
         SetDefaultItems();
     }
 
     private void Window_Closed(object sender, EventArgs e)
     {
-        s_SnippetIO.RemoveObserver(CodeSnippetsListObserver);
+        //s_SnippetIO.RemoveObserver(CodeSnippetsListObserver);
     }
+    #endregion Window Events
+    #region onChange Events
     private void CodeSnippetsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         ChangeItemInList();
     }
-    private void ChangeItemInList()
-    {
-        if (CodeSnippetsList != null && TextSnippet != null)
-        {
-            var tSelectedSnippet = CodeSnippetsList.FirstOrDefault(CodeSnippet => CodeSnippet.Id == TextSnippet.Id);
-            if (tSelectedSnippet != null)
-            {
-                tSelectedSnippet.Code = TextSnippet.Code;
-                tSelectedSnippet.Shortcut = TextSnippet.Shortcut;
-                tSelectedSnippet.Id = TextSnippet.Id;
-            }
-            else
-            {
-                tSelectedSnippet = new CodeSnippet { Code = TextSnippet.Code, Shortcut = TextSnippet.Shortcut, Id = TextSnippet.Id };
-                CodeSnippetsList.Add(TextSnippet);
-            }
-            TextSnippet = SelectedSnippet;
-        }
-    }
-    private void SetDefaultItems()
-    {
-        SelectedSnippet = CodeSnippetsList.FirstOrDefault() ?? new CodeSnippet { Id = "new snippet", Code = " Waiting for you..", Shortcut = "" };
-        TextSnippet = CodeSnippetsList.FirstOrDefault() ?? new CodeSnippet { Id = "-1", Code = " Waiting for you..", Shortcut = "" };
-        if (SnippetGrid.Items.Count > 0)
-        {
-            SnippetGrid.SelectedIndex = 0;
-        }
-    }
-
-    #endregion Window Events
+    #endregion onChange Events
+    #region Keyboard Events 
     private void OnShortcutKeyDown(object sender, KeyEventArgs e)
     {
         e.Handled = true; // Prevents text from being added to the text box
@@ -94,17 +72,295 @@ public partial class MainWindow : Window
         // Update the text box with the new shortcut
         NewShortcutBox.Text = shortcutBuilder.ToString();
     }
+    #endregion Keyboard Events
+    #region Button Events
 
-    private void CodeSnippetsList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+    private void SaveAllButton_Click(object sender, RoutedEventArgs e)
     {
-        if (CodeSnippetsList != null)
+        var result = MessageBox.Show("Do you want to save All snippets?", "Confirm Save", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+        if (result == MessageBoxResult.Yes)
         {
-            ChangeItemInList();
-            s_SnippetIO.AddList(CodeSnippetsList);
-            SetDefaultItems();
+            s_SnippetIO.UpdateAll(CodeSnippetsList);
+            SetDefaultItems(SelectedSnippet.Id);
+            AnimateGridColor(TimeSpan.FromSeconds(1));
+        }
+        else
+        {
+            MessageBox.Show("Snippets not saved.", "Cancelled", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+    }
+    private void SaveItemButton_Click(object sender, RoutedEventArgs e)
+    {
+        // Get the clicked button
+        Button button = (sender as Button)!;
+
+        // Find the DataGridRow that contains the clicked button
+        var row = FindParent<DataGridRow>(button!);
+        if (row != null)
+        {
+            // Get the CodeSnippet object for this row (using DataContext)
+            if (row.DataContext is SnippetIO.CodeSnippet snippet)
+            {
+                var snippetToUpdate = CodeSnippetsList.FirstOrDefault(s => s.Id == snippet.Id);
+                if (snippetToUpdate != null)
+                {
+                    var result = MessageBox.Show("Do you want to save the snippet?", "Confirm Save", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        s_SnippetIO.Update(snippetToUpdate);
+                        SetDefaultItems(snippet.Id);
+                        AnimateRowColor(row, TimeSpan.FromSeconds(1));
+
+                    }
+                    else
+                    {
+                        MessageBox.Show("Snippet not saved.", "Cancelled", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                }
+            }
+        }
+    }
+
+    private void DeleteItemButton_Click(object sender, RoutedEventArgs e)
+    {
+        // Get the clicked button
+        Button button = (sender as Button)!;
+        // Find the DataGridRow that contains the clicked button
+        var row = FindParent<DataGridRow>(button!);
+        if (row != null)
+        {
+            // Get the CodeSnippet object for this row (using DataContext)
+            if (row.DataContext is SnippetIO.CodeSnippet snippet)
+            {
+                var snippetToDelete = CodeSnippetsList.FirstOrDefault(s => s.Id == snippet.Id);
+                if (snippetToDelete != null)
+                {
+                    var result = MessageBox.Show("Do you want to delete the snippet?", "Confirm deletion", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        CodeSnippetsList.Remove(snippetToDelete);
+                        s_SnippetIO.Delete(snippetToDelete.Id);
+                        SetDefaultItems();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Snippet not deleted.", "Cancelled", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+
+                }
+            }
+        }
+        else
+        {
+            //MessageBox.Show("Could not find parent row.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+    private void DeleteAllButton_Click(object sender, RoutedEventArgs e)
+    {
+        var result = MessageBox.Show("Do you want to delete all snippets?", "Confirm deletion", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+        if (result == MessageBoxResult.Yes)
+        {
+            CodeSnippetsList.Clear();
+            s_SnippetIO.DeleteAll();
+        }
+        else
+        {
+            MessageBox.Show("Snippets not deleted.", "Cancelled", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
     }
+    #endregion Button Events
+    #endregion Events
+    #region Helpers
+    private void ChangeItemInList()
+    {
+        if (CodeSnippetsList != null && TextSnippet != null)
+        {
+            var tSelectedSnippet = CodeSnippetsList.FirstOrDefault(CodeSnippet => CodeSnippet.Id == TextSnippet.Id);
+            if (tSelectedSnippet != null)
+            {
+                tSelectedSnippet.Code = TextSnippet.Code;
+                tSelectedSnippet.Shortcut = TextSnippet.Shortcut;
+                tSelectedSnippet.Id = TextSnippet.Id;
+            }
+            else
+            {
+                tSelectedSnippet = new CodeSnippet { Code = TextSnippet.Code, Shortcut = TextSnippet.Shortcut, Id = TextSnippet.Id };
+                CodeSnippetsList.Add(TextSnippet);
+            }
+            TextSnippet = SelectedSnippet;
+        }
+    }
+    private void SetDefaultItems(string? id = null)
+    {
+        int index = 0;
+        SnippetIO.CodeSnippet? foundSnippet = null;
+
+        // Search for the snippet with the matching ID
+        for (int i = 0; i < SnippetGrid.Items.Count; i++)
+        {
+            if (SnippetGrid.Items[i] is SnippetIO.CodeSnippet snippet && snippet.Id == id)
+            {
+                foundSnippet = snippet;
+                index = i;
+                break; // Stop searching once found
+            }
+        }
+
+        // If not found, fallback to first item or default new snippet
+        if (foundSnippet == null)
+        {
+            foundSnippet = CodeSnippetsList.FirstOrDefault() ?? new SnippetIO.CodeSnippet
+            {
+                Id = "new snippet",
+                Code = " Waiting for you..",
+                Shortcut = ""
+            };
+            index = SnippetGrid.Items.IndexOf(foundSnippet);
+        }
+
+        // Set SelectedSnippet and TextSnippet to the found item
+        SelectedSnippet = foundSnippet;
+        TextSnippet = foundSnippet;
+        SnippetGrid.SelectedIndex = index;
+    }
+
+    private T? FindParent<T>(DependencyObject child) where T : DependencyObject
+    {
+        // Traverse the visual tree upwards
+        while (child != null)
+        {
+            if (child is T)
+            {
+                return (T)child; // Return the parent if it's of type T
+            }
+            child = VisualTreeHelper.GetParent(child); // Move up the tree
+        }
+
+        return null;
+    }
+    // Helper method to find the visual child of a specific type in a visual tree
+    private T? GetVisualChild<T>(DependencyObject parent) where T : DependencyObject
+    {
+        // Use the default value for T, but differentiate for reference and value types.
+        T? child = default(T);
+
+        int childrenCount = VisualTreeHelper.GetChildrenCount(parent);
+
+        for (int i = 0; i < childrenCount; i++)
+        {
+            DependencyObject childObject = VisualTreeHelper.GetChild(parent, i);
+
+            // If childObject is of type T, return it.
+            if (childObject is T)
+            {
+                child = (T)childObject;
+                break;
+            }
+
+            // If the childObject itself is not of type T, recursively search its children.
+            child = GetVisualChild<T>(childObject);
+
+            if (child != null)
+            {
+                break;
+            }
+        }
+
+        // Return null explicitly for reference types or default value for value types.
+        return child;
+    }
+    // Helper method to get all the DataGridCells in a DataGridRow
+    private IEnumerable<DataGridCell> GetCells(DataGridRow row)
+    {
+        var cells = new List<DataGridCell>();
+
+        // Traverse the visual tree to find all DataGridCells
+        for (int i = 0; i < SnippetGrid.Columns.Count; i++)
+        {
+            DataGridCell? cell = GetCell(row, i);
+            if (cell != null)
+            {
+                cells.Add(cell);
+            }
+        }
+
+        return cells;
+    }
+
+    // Helper method to get a DataGridCell from a DataGridRow and column index
+    private DataGridCell? GetCell(DataGridRow row, int columnIndex)
+    {
+        DataGridCellsPresenter? presenter = GetVisualChild<DataGridCellsPresenter>(row);
+
+        // Try to get the cell from the presenter
+        if (presenter != null)
+        {
+            return presenter.ItemContainerGenerator.ContainerFromIndex(columnIndex) as DataGridCell;
+        }
+
+        return null;
+    }
+    private DataGridRow? GetDataGridRowBySnippetId(string snippetId)
+    {
+        foreach (var item in SnippetGrid.Items)
+        {
+            if (item is SnippetIO.CodeSnippet snippet && snippet.Id == snippetId)
+            {
+                return SnippetGrid.ItemContainerGenerator.ContainerFromItem(item) as DataGridRow;
+            }
+        }
+        return null; // If no matching row is found
+    }
+
+    #endregion Helpers
+    #region Animations
+    private void AnimateRowColor(DataGridRow row, TimeSpan duration)
+    {
+        Color fromColor = Color.FromArgb(0xFF, 0x17, 0x17, 0x17);
+        Color toColor = (Color)ColorConverter.ConvertFromString("MediumPurple");
+
+        ColorAnimation colorAnimation = new()
+        {
+            From = fromColor,
+            To = toColor,
+            Duration = duration,
+            AutoReverse = true,
+            RepeatBehavior = new RepeatBehavior(1)
+        };
+
+        // Iterate over all cells in the row and apply the color animation
+        foreach (DataGridCell cell in GetCells(row))
+        {
+            SolidColorBrush brush = new(fromColor);
+            cell.Background = brush;
+            brush.BeginAnimation(SolidColorBrush.ColorProperty, colorAnimation);
+        }
+    }
+    private void AnimateGridColor(TimeSpan duration)
+    {
+        Color fromColor = Color.FromArgb(0xFF, 0x17, 0x17, 0x17);
+        Color toColor = (Color)ColorConverter.ConvertFromString("MediumPurple");
+
+        ColorAnimation colorAnimation = new()
+        {
+            From = fromColor,
+            To = toColor,
+            Duration = duration,
+            AutoReverse = true,
+            RepeatBehavior = new RepeatBehavior(1)
+        };
+
+        SolidColorBrush brush = new(fromColor);
+        SnippetGrid.Background = brush;
+        brush.BeginAnimation(SolidColorBrush.ColorProperty, colorAnimation);
+
+    }
+    #endregion Animations
     #region Propetries
 
     #endregion Propetries
@@ -135,8 +391,9 @@ public partial class MainWindow : Window
     #region Observer Operations
     private void QueryCodeSnippetsList()
     {
-        CodeSnippetsList = s_SnippetIO.ReadAll().ToList();
+        CodeSnippetsList = s_SnippetIO.ReadAll().OrderBy(snippet => snippet.Id).ToList();
     }
+
     private void CodeSnippetsListObserver() => QueryCodeSnippetsList();
     #endregion Observer Operations
 

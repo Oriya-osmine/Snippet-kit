@@ -1,28 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Snippets.xml>
   <CodeSnippet>
+    <Id>1</Id>
+    <Code>checks for save</Code>
+    <Shortcut>check</Shortcut>
+  </CodeSnippet>
+  <CodeSnippet>
     <Id>12</Id>
-    <Code>and maybe finally maybe fdadsa</Code>
+    <Code>hmm checks</Code>
     <Shortcut>Hello, World!</Shortcut>
   </CodeSnippet>
   <CodeSnippet>
     <Id>14</Id>
     <Code>Hello, Worlddsadadsadad!             </Code>
-    <Shortcut>Hello, Worlddsadadsadad!             </Shortcut>
+    <Shortcut>Hello, Worlddsadadsadad!</Shortcut>
   </CodeSnippet>
   <CodeSnippet>
     <Id>15</Id>
     <Code>Hello, Worlddsadadsadad!             </Code>
-    <Shortcut>Hello, Worlddsadadsadad!             </Shortcut>
+    <Shortcut>Hello, Worlddsadadsadad! </Shortcut>
   </CodeSnippet>
   <CodeSnippet>
     <Id>16</Id>
-    <Code>Hello, Worlddsadadsadad!             </Code>
+    <Code>save only this v2</Code>
     <Shortcut>Hello, Worlddsadadsadad!             </Shortcut>
-  </CodeSnippet>
-  <CodeSnippet>
-    <Id>1</Id>
-    <Code>checkv2fdsfdsfsd does it save</Code>
-    <Shortcut>check</Shortcut>
   </CodeSnippet>
 </Snippets.xml>

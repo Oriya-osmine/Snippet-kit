@@ -13,6 +13,9 @@ public interface ISnippetIO : IObservable
     void AddList(IEnumerable<CodeSnippet> addList);
     CodeSnippet Read(string id);
     IEnumerable<CodeSnippet> ReadAll();
-    void Update(CodeSnippet id);
+    void Update(CodeSnippet update);
+    void UpdateAll(IEnumerable<CodeSnippet> updateList);
     void Delete(string id);
+    void DeleteAll();
+
 }

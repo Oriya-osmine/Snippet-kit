@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
-namespace SnippetIO;
+namespace Helper;
 
 
 static class XMLTools
@@ -88,62 +88,62 @@ static class XMLTools
     #region XmlConfig
     public static int GetAndIncreaseConfigIntVal(string xmlFileName, string elemName)
     {
-        XElement root = XMLTools.LoadListFromXMLElement(xmlFileName);
+        XElement root = LoadListFromXMLElement(xmlFileName);
         int nextId = root.ToIntNullable(elemName) ?? throw new FormatException($"can't convert:  {xmlFileName}, {elemName}");
         root.Element(elemName)?.SetValue((nextId + 1).ToString());
-        XMLTools.SaveListToXMLElement(root, xmlFileName);
+        SaveListToXMLElement(root, xmlFileName);
         return nextId;
     }
     public static int GetConfigIntVal(string xmlFileName, string elemName)
     {
-        XElement root = XMLTools.LoadListFromXMLElement(xmlFileName);
+        XElement root = LoadListFromXMLElement(xmlFileName);
         int num = root.ToIntNullable(elemName) ?? throw new FormatException($"can't convert:  {xmlFileName}, {elemName}");
         return num;
     }
     public static DateTime GetConfigDateVal(string xmlFileName, string elemName)
     {
-        XElement root = XMLTools.LoadListFromXMLElement(xmlFileName);
+        XElement root = LoadListFromXMLElement(xmlFileName);
         DateTime dt = root.ToDateTimeNullable(elemName) ?? throw new FormatException($"can't convert:  {xmlFileName}, {elemName}");
         return dt;
     }
     public static TimeSpan GetConfigSpanVal(string xmlFileName, string elemName)
     {
-        XElement root = XMLTools.LoadListFromXMLElement(xmlFileName);
+        XElement root = LoadListFromXMLElement(xmlFileName);
         TimeSpan rr = root.ToTimeSpanNullable(elemName) ?? throw new FormatException($"can't convert:  {xmlFileName}, {elemName}");
         return rr;
     }
     public static void SetConfigIntVal(string xmlFileName, string elemName, int elemVal)
     {
-        XElement root = XMLTools.LoadListFromXMLElement(xmlFileName);
-        root.Element(elemName)?.SetValue((elemVal).ToString());
-        XMLTools.SaveListToXMLElement(root, xmlFileName);
+        XElement root = LoadListFromXMLElement(xmlFileName);
+        root.Element(elemName)?.SetValue(elemVal.ToString());
+        SaveListToXMLElement(root, xmlFileName);
     }
     public static void SetConfigDateVal(string xmlFileName, string elemName, DateTime elemVal)
     {
-        XElement root = XMLTools.LoadListFromXMLElement(xmlFileName);
-        root.Element(elemName)?.SetValue((elemVal).ToString());
-        XMLTools.SaveListToXMLElement(root, xmlFileName);
+        XElement root = LoadListFromXMLElement(xmlFileName);
+        root.Element(elemName)?.SetValue(elemVal.ToString());
+        SaveListToXMLElement(root, xmlFileName);
     }
     public static void SetConfigSpanVal(string xmlFileName, string elemName, TimeSpan elemVal)
     {
-        XElement root = XMLTools.LoadListFromXMLElement(xmlFileName);
-        root.Element(elemName)?.SetValue((elemVal).ToString());
-        XMLTools.SaveListToXMLElement(root, xmlFileName);
+        XElement root = LoadListFromXMLElement(xmlFileName);
+        root.Element(elemName)?.SetValue(elemVal.ToString());
+        SaveListToXMLElement(root, xmlFileName);
     }
     #endregion
 
     #region ExtensionFuctions
     public static T? ToEnumNullable<T>(this XElement element, string name) where T : struct, Enum =>
-        Enum.TryParse<T>((string?)element.Element(name), out var result) ? (T?)result : null;
+        Enum.TryParse<T>((string?)element.Element(name), out var result) ? result : null;
     public static DateTime? ToDateTimeNullable(this XElement element, string name) =>
-        DateTime.TryParse((string?)element.Element(name), out var result) ? (DateTime?)result : null;
+        DateTime.TryParse((string?)element.Element(name), out var result) ? result : null;
     public static TimeSpan? ToTimeSpanNullable(this XElement element, string name) =>
-    TimeSpan.TryParse((string?)element.Element(name), out var result) ? (TimeSpan?)result : null;
+    TimeSpan.TryParse((string?)element.Element(name), out var result) ? result : null;
     public static double? ToDoubleNullable(this XElement element, string name) =>
-        double.TryParse((string?)element.Element(name), out var result) ? (double?)result : null;
+        double.TryParse((string?)element.Element(name), out var result) ? result : null;
     [MethodImpl(MethodImplOptions.Synchronized)]
     public static int? ToIntNullable(this XElement element, string name) =>
-        int.TryParse((string?)element.Element(name), out var result) ? (int?)result : null;
+        int.TryParse((string?)element.Element(name), out var result) ? result : null;
     #endregion
 
 }

@@ -32,10 +32,11 @@
               ScrollViewer.HorizontalScrollBarVisibility="Hidden"
               ScrollViewer.VerticalScrollBarVisibility="Auto"
               HeadersVisibility="Column"
-              IsReadOnly="True"
+              IsReadOnly="False"
+              CanUserAddRows="False"
               RowDetailsVisibilityMode="VisibleWhenSelected" 
-              MouseDoubleClick="CodeSnippetsList_MouseDoubleClick"
               FontSize="14">
+                <!-- MouseDoubleClick="CodeSnippetsList_MouseDoubleClick" -->
 
                 <DataGrid.Resources>
                     <!-- Header Style -->
@@ -66,15 +67,17 @@
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="DataGridRow">
-                                    <Border Background="Transparent"    
-                        BorderBrush="Transparent"
-                        BorderThickness="0">
+                                    <Border Background="{TemplateBinding Background}" 
+                                            BorderBrush="{TemplateBinding BorderBrush}" 
+                                            BorderThickness="{TemplateBinding BorderThickness}">
                                         <DataGridCellsPresenter/>
                                     </Border>
                                 </ControlTemplate>
                             </Setter.Value>
                         </Setter>
                     </Style>
+
+
 
 
 
@@ -89,7 +92,7 @@
                             <Setter.Value>
                                 <ControlTemplate TargetType="DataGridCell">
                                     <Border Background="{TemplateBinding Background}" 
-                                    BorderBrush="{TemplateBinding BorderBrush}" 
+                                    BorderBrush="{StaticResource SecondaryBrush}" 
                                     BorderThickness="0"
                                     CornerRadius="10">
                                         <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5"/>
@@ -107,6 +110,35 @@
 
                 <DataGrid.Columns>
                     <DataGridTextColumn Binding="{Binding Id}" Header="Name" Width="*"/>
+                    
+                    <!-- Delete Button Column -->
+                    <DataGridTemplateColumn Width="Auto">
+                        <DataGridTemplateColumn.Header>
+                            <Button Content="❌" Click="DeleteAllButton_Click" Padding="5"
+                                    Margin="5" Background="Red" Foreground="White"/>
+                        </DataGridTemplateColumn.Header>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="🗑️" Click="DeleteItemButton_Click"
+                        Padding="5" Margin="5" Background="Red" Foreground="White"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    
+                    <!-- Save Button Column -->
+                    <DataGridTemplateColumn Width="Auto">
+                        <DataGridTemplateColumn.Header>
+                            <Button Content="💾" Click="SaveAllButton_Click" Padding="5"
+                                    Background="Green" Foreground="White"/>
+                        </DataGridTemplateColumn.Header>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="💾" Click="SaveItemButton_Click"
+                        Padding="5" Margin="5"
+                        Background="Green" Foreground="White"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
         </Border>
