@@ -158,7 +158,7 @@
                     BorderThickness="0"
                     Padding="5"
                     FontSize="14"
-                    Text="{Binding TextSnippet.Name, Mode=TwoWay}"/>
+                    Text="{Binding TextSnippet.Id, Mode=TwoWay}"/>
                 <Button Content="➕ ADD"
                     Click="Add_Button"
                     Padding="5"
