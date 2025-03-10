@@ -9,7 +9,8 @@ namespace SnippetIOApi;
 
 public interface ISnippetIO : IObservable
 {
-    void Create(CodeSnippet add);
+    void Add(CodeSnippet add);
+    void AddList(IEnumerable<CodeSnippet> addList);
     CodeSnippet Read(string id);
     IEnumerable<CodeSnippet> ReadAll();
     void Update(CodeSnippet id);

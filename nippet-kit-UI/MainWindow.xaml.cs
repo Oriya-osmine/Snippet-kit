@@ -1,9 +1,7 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Threading;
 
 namespace SnippetIO;
 
@@ -17,18 +15,51 @@ public partial class MainWindow : Window
         InitializeComponent();
         NewShortcutBox.PreviewKeyDown += OnShortcutKeyDown;
         QueryCodeSnippetsList();
-        SelectedSnippet = CodeSnippetsList.FirstOrDefault() ?? new CodeSnippet { Id = "new snippet", Code = " Waiting for you..",Shortcut = ""};
     }
     #region Window Events
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
         s_SnippetIO.AddObserver(CodeSnippetsListObserver);
+        SetDefaultItems();
     }
 
     private void Window_Closed(object sender, EventArgs e)
     {
         s_SnippetIO.RemoveObserver(CodeSnippetsListObserver);
     }
+    private void CodeSnippetsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        ChangeItemInList();
+    }
+    private void ChangeItemInList()
+    {
+        if (CodeSnippetsList != null && TextSnippet != null)
+        {
+            var tSelectedSnippet = CodeSnippetsList.FirstOrDefault(CodeSnippet => CodeSnippet.Id == TextSnippet.Id);
+            if (tSelectedSnippet != null)
+            {
+                tSelectedSnippet.Code = TextSnippet.Code;
+                tSelectedSnippet.Shortcut = TextSnippet.Shortcut;
+                tSelectedSnippet.Id = TextSnippet.Id;
+            }
+            else
+            {
+                tSelectedSnippet = new CodeSnippet { Code = TextSnippet.Code, Shortcut = TextSnippet.Shortcut, Id = TextSnippet.Id };
+                CodeSnippetsList.Add(TextSnippet);
+            }
+            TextSnippet = SelectedSnippet;
+        }
+    }
+    private void SetDefaultItems()
+    {
+        SelectedSnippet = CodeSnippetsList.FirstOrDefault() ?? new CodeSnippet { Id = "new snippet", Code = " Waiting for you..", Shortcut = "" };
+        TextSnippet = CodeSnippetsList.FirstOrDefault() ?? new CodeSnippet { Id = "-1", Code = " Waiting for you..", Shortcut = "" };
+        if (SnippetGrid.Items.Count > 0)
+        {
+            SnippetGrid.SelectedIndex = 0;
+        }
+    }
+
     #endregion Window Events
     private void OnShortcutKeyDown(object sender, KeyEventArgs e)
     {
@@ -63,20 +94,28 @@ public partial class MainWindow : Window
         // Update the text box with the new shortcut
         NewShortcutBox.Text = shortcutBuilder.ToString();
     }
-   
+
     private void CodeSnippetsList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
-       // if (SelectedSnippet != null)
-        //{
-        //    NewShortcutBox.Text = "";
-        //    SnippetContentBox.Text = "";
-        //    s_SnippetIO.Delete(SelectedSnippet.Id);
-       // }
+        if (CodeSnippetsList != null)
+        {
+            ChangeItemInList();
+            s_SnippetIO.AddList(CodeSnippetsList);
+            SetDefaultItems();
+        }
+
     }
     #region Propetries
+
     #endregion Propetries
     #region Dependency Properties
-
+    public SnippetIO.CodeSnippet TextSnippet
+    {
+        get { return (SnippetIO.CodeSnippet)GetValue(TextSnippetProperty); }
+        set { SetValue(TextSnippetProperty, value); }
+    }
+    public static readonly DependencyProperty TextSnippetProperty =
+    DependencyProperty.Register("TextSnippet", typeof(SnippetIO.CodeSnippet), typeof(MainWindow), new PropertyMetadata(null));
     public SnippetIO.CodeSnippet SelectedSnippet
     {
         get { return (SnippetIO.CodeSnippet)GetValue(SelectedSnippetProperty); }
@@ -84,9 +123,9 @@ public partial class MainWindow : Window
     }
     public static readonly DependencyProperty SelectedSnippetProperty =
     DependencyProperty.Register("SelectedSnippet", typeof(SnippetIO.CodeSnippet), typeof(MainWindow), new PropertyMetadata(null));
-    public IEnumerable<SnippetIO.CodeSnippet> CodeSnippetsList
+    public List<SnippetIO.CodeSnippet> CodeSnippetsList
     {
-        get { return (IEnumerable<SnippetIO.CodeSnippet>)GetValue(CodeSnippetsListProperty); }
+        get { return (List<SnippetIO.CodeSnippet>)GetValue(CodeSnippetsListProperty); }
         set { SetValue(CodeSnippetsListProperty, value); }
     }
     public static readonly DependencyProperty CodeSnippetsListProperty =
@@ -96,7 +135,7 @@ public partial class MainWindow : Window
     #region Observer Operations
     private void QueryCodeSnippetsList()
     {
-        CodeSnippetsList = s_SnippetIO.ReadAll();
+        CodeSnippetsList = s_SnippetIO.ReadAll().ToList();
     }
     private void CodeSnippetsListObserver() => QueryCodeSnippetsList();
     #endregion Observer Operations

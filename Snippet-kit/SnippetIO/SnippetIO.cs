@@ -1,31 +1,19 @@
-﻿using SnippetIOApi;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System;
-using System.IO;
-using System.Xml.Serialization;
-using System.Xml.Linq;
-using System.Net.Http.Headers;
-using static System.Net.WebRequestMethods;
+﻿using System.Xml.Linq;
 namespace SnippetIO;
 
 
 public class CodeSnippet
 {
-    public required string Id { get; init; }
-    public required string Code { get; init; }
-    public required string Shortcut { get; init; }
-
+    public required string Id { get; set; }
+    public required string Code { get; set; }
+    public required string Shortcut { get; set; }
     internal static CodeSnippet GetCodeSnippet(XElement Snippet)
     {
         return new CodeSnippet()
         {
             Id = Snippet.Element("Id")?.Value ?? throw new Exception("null Id"),
             Code = Snippet.Element("Code")?.Value ?? "",
-            Shortcut = Snippet.Element("Code")?.Value ?? ""
+            Shortcut = Snippet.Element("Shortcut")?.Value ?? ""
 
         };
     }
@@ -50,19 +38,47 @@ internal class SnippetIO : SnippetIOApi.ISnippetIO
     readonly static string Snippetsxml = "Snippets.xml";
     internal static SnippetIOApi.ObserverManager Observers = new(); //stage 5
 
-    public void Create(CodeSnippet newSnippet)
+    public void Add(CodeSnippet newSnippet)
     {
         List<CodeSnippet> CodeSnippets = ReadAll().ToList();
-        if(CodeSnippets.Any(CodeSnippet => CodeSnippet.Id == newSnippet.Id))
+
+        if (CodeSnippets.Any(CodeSnippet => CodeSnippet.Id == newSnippet.Id))
             throw new Exception($"A CodeSnippet with the ID: {newSnippet.Id} already exists!");
+
         XElement CodeSnippetsRootElem = XMLTools.LoadListFromXMLElement(Snippetsxml);
-        // Add new CodeSnippet element to the root
+
         CodeSnippetsRootElem.Add(new XElement("CodeSnippet", CodeSnippet.GetCodeSnippetElement(newSnippet)));
-        // Save the updated XML
+
         XMLTools.SaveListToXMLElement(CodeSnippetsRootElem, Snippetsxml);
+
         Observers.NotifyListUpdated();
         Observers.NotifyItemUpdated(newSnippet.Id);
     }
+    public void AddList(IEnumerable<CodeSnippet> addList)
+    {
+        XElement? CodeSnippetsRootElem = XMLTools.LoadListFromXMLElement(Snippetsxml);
+
+        List<CodeSnippet> existingSnippets = ReadAll().ToList();
+
+        foreach (var newSnippet in addList)
+        {
+            var existingSnippetElement = CodeSnippetsRootElem
+                .Elements("CodeSnippet")
+                .FirstOrDefault(x => x.Element("Id")?.Value == newSnippet.Id.ToString());
+
+            if (existingSnippetElement != null)
+            {
+                existingSnippetElement.Remove();
+            }
+
+            CodeSnippetsRootElem.Add(new XElement("CodeSnippet", CodeSnippet.GetCodeSnippetElement(newSnippet)));
+        }
+
+        XMLTools.SaveListToXMLElement(CodeSnippetsRootElem, Snippetsxml);
+
+        Observers.NotifyListUpdated();
+    }
+
 
     public CodeSnippet Read(string id)
     {
@@ -75,7 +91,7 @@ internal class SnippetIO : SnippetIOApi.ISnippetIO
     {
         XElement root = XMLTools.LoadListFromXMLElement(Snippetsxml);
         IEnumerable<CodeSnippet> CodeSnippets = root.Elements("CodeSnippet").Select(CodeSnippet.GetCodeSnippet);
-        return CodeSnippets; 
+        return CodeSnippets;
     }
 
 

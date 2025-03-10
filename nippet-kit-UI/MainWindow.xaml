@@ -14,19 +14,25 @@
         </Grid.ColumnDefinitions>
 
         <!-- Left: Snippet List -->
-        <Border CornerRadius="10" BorderThickness="1" BorderBrush="{StaticResource PrimaryBrush}">
+        <Border CornerRadius="10" BorderThickness="2" BorderBrush="{StaticResource PrimaryBrush}" Background="Transparent">
             <DataGrid x:Name="SnippetGrid"
               SelectionMode="Single"
               SelectionUnit="FullRow"
-              Background="{StaticResource PrimaryBrush}"
+              Background="Transparent"
               Foreground="{StaticResource SecondaryBrush}"
+              HorizontalGridLinesBrush="Transparent"
+              VerticalGridLinesBrush="Transparent"
               BorderThickness="0"
+              BorderBrush="Transparent"
               AutoGenerateColumns="False"
               ItemsSource="{Binding CodeSnippetsList, Mode=TwoWay}"
               SelectedItem="{Binding SelectedSnippet, Mode=TwoWay}" 
+              SelectionChanged="CodeSnippetsList_SelectionChanged"
               HorizontalContentAlignment="Left"
-              IsReadOnly="True"
+              ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+              ScrollViewer.VerticalScrollBarVisibility="Auto"
               HeadersVisibility="Column"
+              IsReadOnly="True"
               RowDetailsVisibilityMode="VisibleWhenSelected" 
               MouseDoubleClick="CodeSnippetsList_MouseDoubleClick"
               FontSize="14">
@@ -36,52 +42,55 @@
                     <Style TargetType="DataGridColumnHeader">
                         <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
                         <Setter Property="Foreground" Value="{StaticResource SecondaryBrush}"/>
-                        <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
-                        <Setter Property="BorderThickness" Value="0.2"/>
-                        <Setter Property="Padding" Value="5"/>
+                        <Setter Property="BorderBrush" Value="Transparent"/>
+                        <Setter Property="Margin" Value="1,2,1,2"/>
                         <Setter Property="HorizontalContentAlignment" Value="Center"/>
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="DataGridColumnHeader">
                                     <Border Background="{TemplateBinding Background}" 
                                     BorderBrush="{TemplateBinding BorderBrush}" 
-                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    BorderThickness="0"
                                     CornerRadius="10">
-                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5"/>
                                     </Border>
                                 </ControlTemplate>
                             </Setter.Value>
                         </Setter>
-                        
+
                     </Style>
 
-
                     <Style TargetType="DataGridRow">
-                        <Setter Property="Background" Value="{StaticResource ContainerBrush}"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="Margin" Value="1,2,1,2"/>
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="DataGridRow">
-                                    <Border Background="{StaticResource ContainerBrush}">
+                                    <Border Background="Transparent"    
+                        BorderBrush="Transparent"
+                        BorderThickness="0">
                                         <DataGridCellsPresenter/>
                                     </Border>
                                 </ControlTemplate>
                             </Setter.Value>
                         </Setter>
-                        
                     </Style>
-                    
+
+
+
                     <!-- Cell Style -->
                     <Style TargetType="DataGridCell">
+                        <Setter Property="Padding" Value="1,1"/>
+                        <Setter Property="Margin" Value="2,0,2,0"/>
                         <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
                         <Setter Property="Foreground" Value="{StaticResource SecondaryBrush}"/>
                         <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
-                        <Setter Property="BorderThickness" Value="0.2"/>
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="DataGridCell">
                                     <Border Background="{TemplateBinding Background}" 
                                     BorderBrush="{TemplateBinding BorderBrush}" 
-                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    BorderThickness="0"
                                     CornerRadius="10">
                                         <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5"/>
                                     </Border>
@@ -116,7 +125,7 @@
                      Padding="5"
                      FontSize="14"
                      IsReadOnly="True"
-                     Text="{Binding SelectedSnippet.Shortcut, Mode=TwoWay}"/>
+                     Text="{Binding TextSnippet.Shortcut, Mode=TwoWay}"/>
 
             <!-- Snippet Content -->
             <TextBlock Text="Snippet Content:" FontSize="16" Margin="0,15,0,5"/>
@@ -129,7 +138,7 @@
                      FontSize="14"
                      AcceptsReturn="True"
                      TextWrapping="Wrap"
-                     Text="{Binding SelectedSnippet.Code, Mode=TwoWay}"/>
+                     Text="{Binding TextSnippet.Code, Mode=TwoWay}"/>
         </StackPanel>
     </Grid>
 </Window>

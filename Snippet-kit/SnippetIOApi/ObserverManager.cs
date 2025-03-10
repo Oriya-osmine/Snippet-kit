@@ -46,7 +46,7 @@ class ObserverManager
         if (_specificObservers.ContainsKey(id)) // if there are already observers for the ID
             _specificObservers[id] += observer; // add the given observer
         else // there is the first observer for the ID
-            _specificObservers[id] = observer; // create hash table entry for the ID with the given observer
+            _specificObservers[id] = observer; // Add hash table entry for the ID with the given observer
     }
     /// <summary>
     /// Remove an observer on change in an instance of entity that may effect the entity instance presentation

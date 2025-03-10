@@ -6,12 +6,12 @@
 
         static void Main(string[] args)
         {
-            s_SnippetIO.Create(new SnippetIO.CodeSnippet { Id = "1", Code = "Hello, World!", Shortcut = "" });
-            s_SnippetIO.Create(new SnippetIO.CodeSnippet { Id = "12", Code = "Hello, World!", Shortcut = "" });
-            s_SnippetIO.Create(new SnippetIO.CodeSnippet { Id = "13", Code = "Hello, Worlddsadadsadad!             ", Shortcut = "" });
-            s_SnippetIO.Create(new SnippetIO.CodeSnippet { Id = "14", Code = "Hello, Worlddsadadsadad!             ", Shortcut = "" });
-            s_SnippetIO.Create(new SnippetIO.CodeSnippet { Id = "15", Code = "Hello, Worlddsadadsadad!             ", Shortcut = "" });
-            s_SnippetIO.Create(new SnippetIO.CodeSnippet { Id = "16", Code = "Hello, Worlddsadadsadad!             ", Shortcut = "" });
+            s_SnippetIO.Add(new SnippetIO.CodeSnippet { Id = "1", Code = "Hello, World!", Shortcut = "" });
+            s_SnippetIO.Add(new SnippetIO.CodeSnippet { Id = "12", Code = "Hello, World!", Shortcut = "" });
+            s_SnippetIO.Add(new SnippetIO.CodeSnippet { Id = "13", Code = "Hello, Worlddsadadsadad!             ", Shortcut = "" });
+            s_SnippetIO.Add(new SnippetIO.CodeSnippet { Id = "14", Code = "Hello, Worlddsadadsadad!             ", Shortcut = "" });
+            s_SnippetIO.Add(new SnippetIO.CodeSnippet { Id = "15", Code = "Hello, Worlddsadadsadad!             ", Shortcut = "" });
+            s_SnippetIO.Add(new SnippetIO.CodeSnippet { Id = "16", Code = "Hello, Worlddsadadsadad!             ", Shortcut = "" });
 
 
             Console.WriteLine(s_SnippetIO.Read("1"));
