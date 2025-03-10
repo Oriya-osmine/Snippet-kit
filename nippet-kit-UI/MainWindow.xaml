@@ -149,28 +149,44 @@
         <StackPanel Grid.Column="1" Margin="20">
             <!-- Shortcut Input -->
             <TextBlock Text="Shortcut:" FontSize="16" Margin="0,0,0,5"/>
-            <TextBox x:Name="NewShortcutBox"
-                     Height="35"
-                     Background="#444"
-                     Foreground="White"
-                     BorderThickness="0"
-                     Padding="5"
-                     FontSize="14"
-                     IsReadOnly="True"
-                     Text="{Binding TextSnippet.Shortcut, Mode=TwoWay}"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBox x:Name="NewShortcutBox"
+                 Height="35"
+                 Background="#444"
+                 Foreground="White"
+                 BorderThickness="0"
+                 Padding="5"
+                 FontSize="14"
+                 IsReadOnly="True"
+                 Text="{Binding TextSnippet.Shortcut, Mode=TwoWay}"
+                 Grid.Column="0"/>
+
+                <Button Content="➕ ADD"
+                Padding="5"
+                Margin="5,0,0,0"
+                Background="Green"
+                Foreground="White"
+                FontWeight="Bold"
+                Grid.Column="1"/>
+            </Grid>
 
             <!-- Snippet Content -->
             <TextBlock Text="Snippet Content:" FontSize="16" Margin="0,15,0,5"/>
             <TextBox x:Name="SnippetContentBox"
-                     Height="200"
-                     Background="#444"
-                     Foreground="White"
-                     BorderThickness="0"
-                     Padding="5"
-                     FontSize="14"
-                     AcceptsReturn="True"
-                     TextWrapping="Wrap"
-                     Text="{Binding TextSnippet.Code, Mode=TwoWay}"/>
+             Height="200"
+             Background="#444"
+             Foreground="White"
+             BorderThickness="0"
+             Padding="5"
+             FontSize="14"
+             AcceptsReturn="True"
+             TextWrapping="Wrap"
+             Text="{Binding TextSnippet.Code, Mode=TwoWay}"/>
         </StackPanel>
+
     </Grid>
 </Window>

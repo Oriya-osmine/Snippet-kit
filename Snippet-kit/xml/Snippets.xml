@@ -1,28 +1,2 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Snippets.xml>
-  <CodeSnippet>
-    <Id>12</Id>
-    <Code>Hello, World!</Code>
-    <Shortcut></Shortcut>
-  </CodeSnippet>
-  <CodeSnippet>
-    <Id>14</Id>
-    <Code>Hello, Worlddsadadsadad!             </Code>
-    <Shortcut></Shortcut>
-  </CodeSnippet>
-  <CodeSnippet>
-    <Id>15</Id>
-    <Code>Hello, Worlddsadadsadad!             </Code>
-    <Shortcut></Shortcut>
-  </CodeSnippet>
-  <CodeSnippet>
-    <Id>16</Id>
-    <Code>Hello, Worlddsadadsadad!             </Code>
-    <Shortcut></Shortcut>
-  </CodeSnippet>
-  <CodeSnippet>
-    <Id>1</Id>
-    <Code>blaa, World!</Code>
-    <Shortcut></Shortcut>
-  </CodeSnippet>
-</Snippets.xml>
+<ArrayOfCodeSnippet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
