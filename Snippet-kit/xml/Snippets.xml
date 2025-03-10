@@ -1,2 +1,68 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ArrayOfCodeSnippet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfCodeSnippet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <CodeSnippet>
+    <Id>1</Id>
+    <Code>blaa, World!</Code>
+    <Shortcut></Shortcut>
+  </CodeSnippet>
+  <CodeSnippet>
+    <Id>12</Id>
+    <Code>Hello, World!</Code>
+    <Shortcut></Shortcut>
+  </CodeSnippet>
+  <CodeSnippet>
+    <Id>14</Id>
+    <Code>Hello, Worlddsadadsadad!             </Code>
+    <Shortcut></Shortcut>
+  </CodeSnippet>
+  <CodeSnippet>
+    <Id>16</Id>
+    <Code>Hello, Worlddsadadsadad!dsadasdsad     fdds3432        </Code>
+    <Shortcut></Shortcut>
+  </CodeSnippet>
+  <CodeSnippet>
+    <Id>New snippet1</Id>
+    <Code> Waiting for you.. sad asdasdsadsa232</Code>
+    <Shortcut></Shortcut>
+  </CodeSnippet>
+  <CodeSnippet>
+    <Id>New snippet2</Id>
+    <Code> Waiting for you.. a seconds time</Code>
+    <Shortcut></Shortcut>
+  </CodeSnippet>
+  <CodeSnippet>
+    <Id>New snippet3</Id>
+    <Code> Waiting for you.. my love</Code>
+    <Shortcut></Shortcut>
+  </CodeSnippet>
+  <CodeSnippet>
+    <Id>New snippet4</Id>
+    <Code> Waiting for you.. mio caro</Code>
+    <Shortcut></Shortcut>
+  </CodeSnippet>
+  <CodeSnippet>
+    <Id>New snippet5</Id>
+    <Code> Waiting for you.. baaaa</Code>
+    <Shortcut></Shortcut>
+  </CodeSnippet>
+  <CodeSnippet>
+    <Id>New snippet6</Id>
+    <Code> Waiting for you..sadsadasdas2332</Code>
+    <Shortcut></Shortcut>
+  </CodeSnippet>
+  <CodeSnippet>
+    <Id>15</Id>
+    <Code>Hello, Worlddsaaaadadsadad!      dsadas       23</Code>
+    <Shortcut></Shortcut>
+  </CodeSnippet>
+  <CodeSnippet>
+    <Id>New snippet11</Id>
+    <Code> Waiting for you.. dsadasdas</Code>
+    <Shortcut></Shortcut>
+  </CodeSnippet>
+  <CodeSnippet>
+    <Id>New snippet7</Id>
+    <Code> Waiting for you.. mio caro</Code>
+    <Shortcut></Shortcut>
+  </CodeSnippet>
+</ArrayOfCodeSnippet>

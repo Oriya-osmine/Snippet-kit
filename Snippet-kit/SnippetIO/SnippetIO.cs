@@ -105,8 +105,6 @@ internal class SnippetIO : SnippetIOApi.ISnippetIO
 
         CodeSnippetsRootElem.Add(new XElement("CodeSnippet", CodeSnippet.GetCodeSnippetElement(update)));
         XMLTools.SaveListToXMLElement(CodeSnippetsRootElem, s_Snippetsxml);
-        Observers.NotifyItemUpdated(update.Id);
-        Observers.NotifyListUpdated();
 
     }
     public void UpdateAll(IEnumerable<CodeSnippet> updateList)
@@ -130,9 +128,6 @@ internal class SnippetIO : SnippetIOApi.ISnippetIO
         }
 
         XMLTools.SaveListToXMLElement(CodeSnippetsRootElem, s_Snippetsxml);
-
-        Observers.NotifyListUpdated();
-
     }
 
     public void Delete(string delete)

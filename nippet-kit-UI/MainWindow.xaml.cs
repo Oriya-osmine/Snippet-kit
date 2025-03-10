@@ -23,13 +23,13 @@ public partial class MainWindow : Window
     #region Window Events
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
-        //s_SnippetIO.AddObserver(CodeSnippetsListObserver);
+        s_SnippetIO.AddObserver(CodeSnippetsListObserver);
         SetDefaultItems();
     }
 
     private void Window_Closed(object sender, EventArgs e)
     {
-        //s_SnippetIO.RemoveObserver(CodeSnippetsListObserver);
+        s_SnippetIO.RemoveObserver(CodeSnippetsListObserver);
     }
     #endregion Window Events
     #region onChange Events
@@ -81,8 +81,9 @@ public partial class MainWindow : Window
 
         if (result == MessageBoxResult.Yes)
         {
+            string tmpid = SelectedSnippet.Id;
             s_SnippetIO.UpdateAll(CodeSnippetsList);
-            SetDefaultItems(SelectedSnippet.Id);
+            SetDefaultItems(tmpid);
             AnimateGridColor(TimeSpan.FromSeconds(1));
         }
         else
@@ -164,13 +165,39 @@ public partial class MainWindow : Window
         }
 
     }
-    private void Add_Button(object sender, RoutedEventArgs e)
+    private void AddButton_Click(object sender, RoutedEventArgs e)
     {
-        
+
+        if (TextSnippet.Id == "New snippet")
+        {
+            TextSnippet.Id = CheckForDuplicateId("New snippet");
+        }
+        string tmpid = TextSnippet.Id;
+        s_SnippetIO.Add(TextSnippet);
+        SetDefaultItems(tmpid);
+
     }
     #endregion Button Events
     #endregion Events
     #region Helpers
+    private string CheckForDuplicateId(string id)
+    {
+        int suffix = 1;
+        string newId = $"{id}{suffix}";
+        if (CodeSnippetsList.Any(CodeSnippet => CodeSnippet.Id == newId))
+        {
+            while (true)
+            {
+                newId = $"{id}{suffix}";
+                if (!CodeSnippetsList.Any(CodeSnippet => CodeSnippet.Id == newId))
+                {
+                    return newId;
+                }
+                suffix++;
+            }
+        }
+        return newId;
+    }
     private void ChangeItemInList()
     {
         if (CodeSnippetsList != null && TextSnippet != null)
@@ -178,14 +205,13 @@ public partial class MainWindow : Window
             var tSelectedSnippet = CodeSnippetsList.FirstOrDefault(CodeSnippet => CodeSnippet.Id == TextSnippet.Id);
             if (tSelectedSnippet != null)
             {
+                if (TextSnippet.Id == "New snippet")
+                {
+                    TextSnippet.Id = CheckForDuplicateId("New snippet");
+                }
                 tSelectedSnippet.Code = TextSnippet.Code;
                 tSelectedSnippet.Shortcut = TextSnippet.Shortcut;
                 tSelectedSnippet.Id = TextSnippet.Id;
-            }
-            else
-            {
-                tSelectedSnippet = new CodeSnippet { Code = TextSnippet.Code, Shortcut = TextSnippet.Shortcut, Id = TextSnippet.Id };
-                CodeSnippetsList.Add(TextSnippet);
             }
             TextSnippet = SelectedSnippet;
         }
@@ -196,32 +222,45 @@ public partial class MainWindow : Window
         SnippetIO.CodeSnippet? foundSnippet = null;
 
         // Search for the snippet with the matching ID
-        for (int i = 0; i < SnippetGrid.Items.Count; i++)
+        if (id != null)
         {
-            if (SnippetGrid.Items[i] is SnippetIO.CodeSnippet snippet && snippet.Id == id)
+            for (int i = 0; i < SnippetGrid.Items.Count; i++)
             {
-                foundSnippet = snippet;
-                index = i;
-                break; // Stop searching once found
+                if (SnippetGrid.Items[i] is SnippetIO.CodeSnippet snippet && snippet.Id == id)
+                {
+                    foundSnippet = snippet;
+                    index = i;
+                    break; // Stop searching once found
+                }
             }
         }
-
+        else if (id == null)
+        {
+            TextSnippet = new() { Id = "New snippet", Code = " Waiting for you..", Shortcut = "" };
+            SelectedSnippet = TextSnippet;
+        }
         // If not found, fallback to first item or default new snippet
-        if (foundSnippet == null)
+        else if (foundSnippet == null)
         {
             foundSnippet = CodeSnippetsList.FirstOrDefault() ?? new SnippetIO.CodeSnippet
             {
-                Id = "new snippet",
+                Id = "New snippet",
                 Code = " Waiting for you..",
                 Shortcut = ""
             };
             index = SnippetGrid.Items.IndexOf(foundSnippet);
-        }
+            TextSnippet = foundSnippet;
+            SelectedSnippet = foundSnippet;
+            SnippetGrid.SelectedIndex = index;
 
-        // Set SelectedSnippet and TextSnippet to the found item
-        SelectedSnippet = foundSnippet;
-        TextSnippet = foundSnippet;
-        SnippetGrid.SelectedIndex = index;
+
+        }
+        else
+        {
+            SelectedSnippet = foundSnippet;
+            TextSnippet = foundSnippet;
+            SnippetGrid.SelectedIndex = index;
+        }
     }
 
     private T? FindParent<T>(DependencyObject child) where T : DependencyObject
