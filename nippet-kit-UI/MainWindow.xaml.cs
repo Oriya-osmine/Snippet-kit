@@ -166,7 +166,7 @@ public partial class MainWindow : Window
     }
     private void Add_Button(object sender, RoutedEventArgs e)
     {
-        
+
     }
     #endregion Button Events
     #endregion Events
