@@ -141,8 +141,9 @@ public partial class MainWindow : Window
 
                     if (result == MessageBoxResult.Yes)
                     {
-                        CodeSnippetsList.Remove(snippetToDelete);
+                        SetDefaultItems();
                         s_SnippetIO.Delete(snippetToDelete.Id);
+                        QueryCodeSnippetsList();
                         SetDefaultItems();
                     }
                     else
@@ -164,8 +165,11 @@ public partial class MainWindow : Window
 
         if (result == MessageBoxResult.Yes)
         {
-            CodeSnippetsList.Clear();
+            SetDefaultItems();
             s_SnippetIO.DeleteAll();
+            QueryCodeSnippetsList();
+            SetDefaultItems();
+
         }
         else
         {

@@ -10,19 +10,4 @@
     <Code>hmm checks</Code>
     <Shortcut>Hello, World!</Shortcut>
   </CodeSnippet>
-  <CodeSnippet>
-    <Id>14</Id>
-    <Code>Hello, Worlddsadadsadad!             </Code>
-    <Shortcut>Hello, Worlddsadadsadad!</Shortcut>
-  </CodeSnippet>
-  <CodeSnippet>
-    <Id>15</Id>
-    <Code>Hello, Worlddsadadsadad!             </Code>
-    <Shortcut>Hello, Worlddsadadsadad! </Shortcut>
-  </CodeSnippet>
-  <CodeSnippet>
-    <Id>16</Id>
-    <Code>save only this v2</Code>
-    <Shortcut>Hello, Worlddsadadsadad!             </Shortcut>
-  </CodeSnippet>
 </Snippets.xml>
