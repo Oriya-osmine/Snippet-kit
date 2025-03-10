@@ -65,4 +65,19 @@
     <Code> Waiting for you.. mio caro</Code>
     <Shortcut></Shortcut>
   </CodeSnippet>
+  <CodeSnippet>
+    <Id>New snippet8</Id>
+    <Code> Waiting for you..</Code>
+    <Shortcut></Shortcut>
+  </CodeSnippet>
+  <CodeSnippet>
+    <Id>new snippet</Id>
+    <Code> Waiting for you..</Code>
+    <Shortcut></Shortcut>
+  </CodeSnippet>
+  <CodeSnippet>
+    <Id>New snippet</Id>
+    <Code> Waiting for you..</Code>
+    <Shortcut></Shortcut>
+  </CodeSnippet>
 </ArrayOfCodeSnippet>

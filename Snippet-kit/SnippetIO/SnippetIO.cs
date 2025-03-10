@@ -41,6 +41,8 @@ internal class SnippetIO : SnippetIOApi.ISnippetIO
 
     public void Add(CodeSnippet newSnippet)
     {
+        if(string.IsNullOrEmpty(newSnippet.Id))
+            throw new Exception("Id cannot be null or empty");
         List<CodeSnippet> CodeSnippets = ReadAll().ToList();
 
         if (CodeSnippets.Any(CodeSnippet => CodeSnippet.Id == newSnippet.Id))
@@ -63,6 +65,8 @@ internal class SnippetIO : SnippetIOApi.ISnippetIO
 
         foreach (var newSnippet in addList)
         {
+            if (string.IsNullOrEmpty(newSnippet.Id))
+                throw new Exception("Id cannot be null or empty");
             var existingSnippetElement = CodeSnippetsRootElem
                 .Elements("CodeSnippet")
                 .FirstOrDefault(x => x.Element("Id")?.Value == newSnippet.Id.ToString());

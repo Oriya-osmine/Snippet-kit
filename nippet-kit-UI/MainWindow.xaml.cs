@@ -167,11 +167,12 @@ public partial class MainWindow : Window
     }
     private void AddButton_Click(object sender, RoutedEventArgs e)
     {
-
-        if (TextSnippet.Id == "New snippet")
+        if(TextSnippet.Id == "")
         {
-            TextSnippet.Id = CheckForDuplicateId("New snippet");
+            MessageBox.Show("Please enter a valid ID", "Invalid ID", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
         }
+        TextSnippet.Id = CheckForDuplicateId(TextSnippet.Id);
         string tmpid = TextSnippet.Id;
         s_SnippetIO.Add(TextSnippet);
         SetDefaultItems(tmpid);
@@ -182,10 +183,11 @@ public partial class MainWindow : Window
     #region Helpers
     private string CheckForDuplicateId(string id)
     {
-        int suffix = 1;
-        string newId = $"{id}{suffix}";
-        if (CodeSnippetsList.Any(CodeSnippet => CodeSnippet.Id == newId))
+
+        if (CodeSnippetsList.Any(CodeSnippet => CodeSnippet.Id == id))
         {
+            int suffix = 1;
+            string newId = $"{id}{suffix}";
             while (true)
             {
                 newId = $"{id}{suffix}";
@@ -196,7 +198,7 @@ public partial class MainWindow : Window
                 suffix++;
             }
         }
-        return newId;
+        return id;
     }
     private void ChangeItemInList()
     {
@@ -205,13 +207,12 @@ public partial class MainWindow : Window
             var tSelectedSnippet = CodeSnippetsList.FirstOrDefault(CodeSnippet => CodeSnippet.Id == TextSnippet.Id);
             if (tSelectedSnippet != null)
             {
-                if (TextSnippet.Id == "New snippet")
+                if (TextSnippet.Id != "")
                 {
-                    TextSnippet.Id = CheckForDuplicateId("New snippet");
+                    tSelectedSnippet.Code = TextSnippet.Code;
+                    tSelectedSnippet.Shortcut = TextSnippet.Shortcut;
+                    tSelectedSnippet.Id = TextSnippet.Id;
                 }
-                tSelectedSnippet.Code = TextSnippet.Code;
-                tSelectedSnippet.Shortcut = TextSnippet.Shortcut;
-                tSelectedSnippet.Id = TextSnippet.Id;
             }
             TextSnippet = SelectedSnippet;
         }
@@ -236,7 +237,7 @@ public partial class MainWindow : Window
         }
         else if (id == null)
         {
-            TextSnippet = new() { Id = "New snippet", Code = " Waiting for you..", Shortcut = "" };
+            TextSnippet = new() { Id = "", Code = " Waiting for you..", Shortcut = "" };
             SelectedSnippet = TextSnippet;
         }
         // If not found, fallback to first item or default new snippet
@@ -244,7 +245,7 @@ public partial class MainWindow : Window
         {
             foundSnippet = CodeSnippetsList.FirstOrDefault() ?? new SnippetIO.CodeSnippet
             {
-                Id = "New snippet",
+                Id = "",
                 Code = " Waiting for you..",
                 Shortcut = ""
             };
@@ -252,8 +253,6 @@ public partial class MainWindow : Window
             TextSnippet = foundSnippet;
             SelectedSnippet = foundSnippet;
             SnippetGrid.SelectedIndex = index;
-
-
         }
         else
         {
