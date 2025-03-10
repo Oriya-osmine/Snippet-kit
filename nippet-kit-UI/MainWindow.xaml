@@ -135,7 +135,7 @@
                             <DataTemplate>
                                 <Button Content="💾" Click="SaveItemButton_Click"
                         Padding="5" Margin="5"
-                        Background="Green" Foreground="White"/>
+                        Background="Green" Foreground="White" CommandParameter="{Binding Id}"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

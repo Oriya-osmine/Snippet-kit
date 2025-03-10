@@ -92,43 +92,39 @@ public partial class MainWindow : Window
     }
     private void SaveItemButton_Click(object sender, RoutedEventArgs e)
     {
-        // Get the clicked button
         Button button = (sender as Button)!;
 
-        // Find the DataGridRow that contains the clicked button
+        string itemId = (string)button.CommandParameter;
+
         var row = FindParent<DataGridRow>(button!);
         if (row != null)
         {
-            // Get the CodeSnippet object for this row (using DataContext)
-            if (row.DataContext is SnippetIO.CodeSnippet snippet)
+
+            var snippetToUpdate = CodeSnippetsList.FirstOrDefault(s => s.Id == itemId);
+            if (snippetToUpdate != null)
             {
-                var snippetToUpdate = CodeSnippetsList.FirstOrDefault(s => s.Id == snippet.Id);
-                if (snippetToUpdate != null)
+                var result = MessageBox.Show("Do you want to save the snippet?", "Confirm Save", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                if (result == MessageBoxResult.Yes)
                 {
-                    var result = MessageBox.Show("Do you want to save the snippet?", "Confirm Save", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    s_SnippetIO.Update(snippetToUpdate);
+                    SetDefaultItems(itemId);
+                    AnimateRowColor(row, TimeSpan.FromSeconds(1));
 
-                    if (result == MessageBoxResult.Yes)
-                    {
-                        s_SnippetIO.Update(snippetToUpdate);
-                        SetDefaultItems(snippet.Id);
-                        AnimateRowColor(row, TimeSpan.FromSeconds(1));
-
-                    }
-                    else
-                    {
-                        MessageBox.Show("Snippet not saved.", "Cancelled", MessageBoxButton.OK, MessageBoxImage.Information);
-                    }
+                }
+                else
+                {
+                    MessageBox.Show("Snippet not saved.", "Cancelled", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
+
         }
     }
 
     private void DeleteItemButton_Click(object sender, RoutedEventArgs e)
     {
-        // Get the clicked button
         Button button = (sender as Button)!;
 
-        // Get the CodeSnippet object for this row (using DataContext)
         string itemId = (string)button.CommandParameter;
 
         var snippetToDelete = CodeSnippetsList.FirstOrDefault(s => s.Id == itemId);
