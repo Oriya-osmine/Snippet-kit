@@ -3,7 +3,6 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
 	<TargetFramework>net8.0-windows</TargetFramework>
-    <RootNamespace>Snippet_kit</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	<BaseOutputPath>$(SolutionDir)..\bin\</BaseOutputPath>
@@ -12,13 +11,10 @@
 	<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 	<UseCommonOutputDirectory>true</UseCommonOutputDirectory>
 	<UseWindowsForms>true</UseWindowsForms>
-	<RootNamespace />
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="xml\**" />
-    <EmbeddedResource Remove="xml\**" />
-    <None Remove="xml\**" />
+    <ProjectReference Include="..\Snippet-kit\Snippet-kit.csproj" />
   </ItemGroup>
 
 </Project>

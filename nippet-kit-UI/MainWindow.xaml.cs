@@ -210,7 +210,8 @@ public partial class MainWindow : Window
                 if (TextSnippet.Id != "")
                 {
                     tSelectedSnippet.Code = TextSnippet.Code;
-                    tSelectedSnippet.Shortcut = TextSnippet.Shortcut;
+                    tSelectedSnippet.KeyShortcut = TextSnippet.KeyShortcut;
+                    tSelectedSnippet.WordShortcut = TextSnippet.WordShortcut;
                     tSelectedSnippet.Id = TextSnippet.Id;
                 }
             }
@@ -237,7 +238,7 @@ public partial class MainWindow : Window
         }
         else if (id == null)
         {
-            TextSnippet = new() { Id = "", Code = " Waiting for you..", Shortcut = "" };
+            TextSnippet = new() { Id = "", Code = " Waiting for you..", KeyShortcut = "", WordShortcut = "" };
             SelectedSnippet = TextSnippet;
         }
         // If not found, fallback to first item or default new snippet
@@ -247,7 +248,8 @@ public partial class MainWindow : Window
             {
                 Id = "",
                 Code = " Waiting for you..",
-                Shortcut = ""
+                KeyShortcut = "",
+                WordShortcut = ""
             };
             index = SnippetGrid.Items.IndexOf(foundSnippet);
             TextSnippet = foundSnippet;

@@ -7,24 +7,28 @@ public class CodeSnippet
 {
     public required string Id { get; set; }
     public required string Code { get; set; }
-    public required string Shortcut { get; set; }
+    public required string KeyShortcut { get; set; }
+
+    public required string WordShortcut { get; set; }
+
     internal static CodeSnippet GetCodeSnippet(XElement Snippet)
     {
         return new CodeSnippet()
         {
             Id = Snippet.Element("Id")?.Value ?? throw new Exception("null Id"),
             Code = Snippet.Element("Code")?.Value ?? "",
-            Shortcut = Snippet.Element("Shortcut")?.Value ?? ""
-
+            KeyShortcut = Snippet.Element("KeyShortcut")?.Value ?? "",
+            WordShortcut = Snippet.Element("WordShortcut")?.Value ?? ""
         };
     }
     internal static IEnumerable<XElement> GetCodeSnippetElement(CodeSnippet Snippet)
     {
         return new XElement[]
         {
-        new XElement("Id", Snippet.Id),
-        new XElement("Code", Snippet.Code),
-        new XElement("Shortcut", Snippet.Shortcut)
+        new("Id", Snippet.Id),
+        new("Code", Snippet.Code),
+        new("KeyShortcut", Snippet.KeyShortcut),
+        new("WordShortcut", Snippet.WordShortcut)
         };
     }
     public override string ToString()
@@ -96,6 +100,8 @@ internal class SnippetIO : SnippetIOApi.ISnippetIO
     {
         XElement root = XMLTools.LoadListFromXMLElement(s_Snippetsxml);
         IEnumerable<CodeSnippet> CodeSnippets = root.Elements("CodeSnippet").Select(CodeSnippet.GetCodeSnippet);
+        if(!CodeSnippets.Any())
+            return new List<CodeSnippet> { new() { Id = "New snippet", Code = "", KeyShortcut = "", WordShortcut = "" } };
         return CodeSnippets;
     }
 
