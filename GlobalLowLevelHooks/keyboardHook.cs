@@ -138,11 +138,11 @@ class KeyboardHook
     }
 
     // Replaces the currently typed word (removing it by sending backspaces equal to its length) and pastes the replacement.
-    private static void ReplaceWord(string replacement)
+    private static void ReplaceWord(string replacement, string deleteuntil)
     {
         isReplacing = true;
         // Capture the current length of the word before doing anything
-        int wordLength = lastWord.Length;
+        int wordLength = deleteuntil.Length;
         Console.WriteLine($"Replacing word with length: {wordLength}");
 
         // Place the replacement text into the clipboard.
@@ -152,6 +152,7 @@ class KeyboardHook
         for (int i = 0; i++ < wordLength; i++)
         {
             SendKeys.SendWait("{BACKSPACE}");
+            Console.WriteLine("Backspace");
         }
 
         // Paste the replacement text.
@@ -181,24 +182,47 @@ class KeyboardHook
             // Build two candidate key combos.
             string candidate1 = $"{modifier}+{nonModifiers[0]}+{nonModifiers[1]}";
             string candidate2 = $"{modifier}+{nonModifiers[1]}+{nonModifiers[0]}";
-            string currentWord = lastWord.ToString().ToLower();
-            string compositeKey1 = $"{currentWord}|{candidate1}";
-            string compositeKey2 = $"{currentWord}|{candidate2}";
-
-            Console.WriteLine($"Checking composite keys: {compositeKey1} or {compositeKey2}");
-            if (shortcutMap.TryGetValue(compositeKey1, out string? value))
+            if (candidate1 == "LControlKey+R+G" || candidate2 == "LControlKey+R+G")
             {
-                Console.WriteLine($"Found mapping for {compositeKey1}");
                 collectedKeys.Clear();
-                isCopying = true;
-                ReplaceWord(value);
+                return CallNextHookEx(_hookID, nCode, wParam, lParam);
             }
-            else if (shortcutMap.TryGetValue(compositeKey2, out string? value1))
+
+            string currentWord = lastWord.ToString().ToLower();
+            while (currentWord.Length > 0)
             {
-                Console.WriteLine($"Found mapping for {compositeKey2}");
-                collectedKeys.Clear();
-                isCopying = true;
-                ReplaceWord(value1);
+                string compositeKey1 = $"{currentWord}|{candidate1}";
+                string compositeKey2 = $"{currentWord}|{candidate2}";
+
+                Console.WriteLine($"Checking composite keys: {compositeKey1} or {compositeKey2}");
+                if (shortcutMap.TryGetValue(compositeKey1, out string? value))
+                {
+                    Console.WriteLine($"Found mapping for {compositeKey1}");
+                    collectedKeys.Clear();
+                    isCopying = true;
+                    ReplaceWord(value, currentWord);
+                    break;
+                }
+                else if (shortcutMap.TryGetValue(compositeKey2, out string? value1))
+                {
+                    Console.WriteLine($"Found mapping for {compositeKey2}");
+                    collectedKeys.Clear();
+                    isCopying = true;
+                    ReplaceWord(value1, currentWord);
+                    break;
+                }
+                else
+                {
+                    if (currentWord.Length > 1) // Check if there's at least 2 characters left
+                    {
+                        currentWord = currentWord.Substring(1); // Take substring from index 1 to the end
+                    }
+                    else
+                    {
+                        collectedKeys.Clear();
+                        break; // Break the loop if currentWord has only 1 or 0 characters left
+                    }
+                }
             }
         }
         while (isCopying && !isReplacing) // backspace to clean the last character 
