@@ -10,31 +10,8 @@ namespace Helper;
 
 public static class SnippetIOUtil
 {
-    // Create a dictionary mapping composite keys to snippet code.
-    // Composite key format: "{wordShortcut}|{normalizedKeyCombo}"
-    public static Dictionary<string, string> CreateShortcutMapping(List<SnippetIO.CodeSnippet> snippets)
-    {
-        var mapping = new Dictionary<string, string>();
-        foreach (var snippet in snippets)
-        {
-            // Only add if both word and key shortcuts are provided.
-            if (!string.IsNullOrWhiteSpace(snippet.WordShortcut) &&
-                !string.IsNullOrWhiteSpace(snippet.KeyShortcut))
-            {
-                // Parse the snippet's KeyShortcut into a list of Keys.
-                List<Keys> keyList = ParseKeyShortcut(snippet.KeyShortcut);
-                // Join them with "+" in the order they appear.
-                string normalizedKeyCombo = string.Join("+", keyList);
-                string compositeKey = $"{snippet.WordShortcut.ToLower()}|{normalizedKeyCombo}";
-                mapping[compositeKey] = snippet.Code;
-                Console.WriteLine($"Mapping: {compositeKey} -> {snippet.Code}");
-            }
-        }
-        return mapping;
-    }
-
     // Parse a KeyShortcut string (e.g. "LeftCtrl + R + B") into a list of Keys.
-    public static List<Keys> ParseKeyShortcut(string keyShortcut)
+    public static IEnumerable<Keys> ParseKeyShortcut(string keyShortcut)
     {
         var tokens = keyShortcut.Split(new char[] { '+', ',' }, StringSplitOptions.RemoveEmptyEntries);
         var keys = new List<Keys>();
@@ -63,5 +40,40 @@ public static class SnippetIOUtil
             }
         }
         return keys;
+    }
+    public static bool IsForbidden(Keys key)
+    {
+        return key == Keys.Back || key == Keys.CapsLock ||
+               key == Keys.Tab || key == Keys.LWin ||
+               key == Keys.RWin || key == Keys.Enter;
+    }
+    // Returns true if the key is a modifier (Control, Shift, Alt)
+    public static bool IsModifier(Keys key)
+    {
+        return key == Keys.LControlKey || key == Keys.RControlKey ||
+               key == Keys.LShiftKey || key == Keys.RShiftKey ||
+               key == Keys.LMenu || key == Keys.RMenu;
+    }
+    public static void ValidKeyShortcuts(string KeyShortcut)
+    {
+        List<Keys> keyShortcuts = ParseKeyShortcut(KeyShortcut).ToList();
+
+        int modifierCount = 0;
+        foreach (Keys key in keyShortcuts)
+        {
+            if (Helper.SnippetIOUtil.IsForbidden(key))
+            {
+                throw new Exception($"The key: {key} is forbidden!");
+            }
+
+            if (Helper.SnippetIOUtil.IsModifier(key))
+            {
+                modifierCount++;
+            }
+        }
+        if (modifierCount > 1)
+        {
+            throw new Exception("Keyboard shortcuts can only contain one modifier key.");
+        }
     }
 }

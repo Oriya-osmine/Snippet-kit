@@ -21,13 +21,17 @@ class KeyboardHook
     // Snippet API and mapping dictionary.
     static readonly SnippetIOApi.ISnippetIO s_SnippetIO = SnippetIOApi.Factory.Get();
     // Dictionary: composite key "word|normalizedKeyCombo" -> snippet code.
-    private static Dictionary<string, string> shortcutMap;
+    private static Dictionary<string, string>? shortcutMap;
 
     [STAThread] // For Clipboard
     public static void Run()
     {
         // Load snippets and create mapping
-        shortcutMap = Helper.SnippetIOUtil.CreateShortcutMapping(s_SnippetIO.ReadAll().ToList());
+        shortcutMap = Helper.KeyboardHookUtil.CreateShortcutMapping(s_SnippetIO.ReadAll().ToList());
+        if(shortcutMap == null || shortcutMap.Count == 0)
+        {
+            throw new Exception("No snippets found");
+        }
         s_SnippetIO.AddObserver(CodeSnippetsListObserver);
         _hookID = SetHook(_proc);
         Application.Run();
@@ -38,8 +42,12 @@ class KeyboardHook
     private static IntPtr SetHook(LowLevelKeyboardProc proc)
     {
         using (Process curProcess = Process.GetCurrentProcess())
-        using (ProcessModule curModule = curProcess.MainModule)
+        using (ProcessModule? curModule = curProcess.MainModule)
         {
+            if(curModule == null)
+            {
+                throw new Exception("Failed to get current module");
+            }
             return SetWindowsHookEx(WH_KEYBOARD_LL, proc, GetModuleHandle(curModule.ModuleName), 0);
         }
     }
@@ -48,14 +56,14 @@ class KeyboardHook
 
     private static IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
     {
-        // Process only keydown events
+        // Process only keydown events, AND DONT PROCCESS IF WE ARE REPLACING
         if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN && !isReplacing)
         {
             int vkCode = Marshal.ReadInt32(lParam);
             Keys key = (Keys)vkCode;
 
             // When we've collected exactly three unique keys and one is a modifier...
-            if (collectedKeys.Count == 3 && collectedKeys.Any(k => IsModifier(k)))
+            if (collectedKeys.Count == 3 && collectedKeys.Any(key => Helper.SnippetIOUtil.IsModifier(key)))
             {
                 handleKeys(nCode, wParam, lParam);
             }
@@ -72,25 +80,26 @@ class KeyboardHook
                 }
                 return CallNextHookEx(_hookID, nCode, wParam, lParam);
             }
+            // delete last character on backspace
             else if (key == Keys.Back && lastWord.Length > 0)
             {
                 lastWord.Remove(lastWord.Length - 1, 1);
                 lastKeyPressTime = DateTime.Now;
                 return CallNextHookEx(_hookID, nCode, wParam, lParam);
             }
+            // clear on Space/Enter
             else if (key == Keys.Space || key == Keys.Enter)
             {
+                collectedKeys.Clear();
                 lastWord.Clear();
                 lastKeyPressTime = DateTime.Now;
                 return CallNextHookEx(_hookID, nCode, wParam, lParam);
             }
-            // (We no longer clear on Space/Enter so that the word remains until a shortcut is applied.)
-
             // Always add modifier keys when pressed
-            if (IsModifier(key) && !collectedKeys.Contains(key))
+            if (Helper.SnippetIOUtil.IsModifier(key) && !collectedKeys.Contains(key))
             {
                 // Ensure there are no other modifiers already added to the list
-                if (!collectedKeys.Any(k => IsModifier(k)))
+                if (!collectedKeys.Any(key => Helper.SnippetIOUtil.IsModifier(key)))
                 {
                     collectedKeys.Add(key);
                     Console.WriteLine($"Added modifier: {key}");
@@ -101,17 +110,18 @@ class KeyboardHook
                 }
             }
             // Add non-modifier keys only if at least one modifier is already pressed
-            else if (!IsModifier(key) && !collectedKeys.Contains(key) &&
-                collectedKeys.Count < 3 && key != Keys.Back)
+            else if (!Helper.SnippetIOUtil.IsModifier(key) && !collectedKeys.Contains(key) &&
+                collectedKeys.Count < 3 && !Helper.SnippetIOUtil.IsForbidden(key))
             {
                 if (collectedKeys.Count == 2)
                 {
-                    if (collectedKeys.Any(k => IsModifier(k)))
+                    // make sure we arent adding a non modifier key as the third key(and we have a no modifier key)
+                    if (collectedKeys.Any(key => Helper.SnippetIOUtil.IsModifier(key)))
                     {
                         collectedKeys.Add(key);
-                        Console.WriteLine($"Added modifier: {key}");
+                        Console.WriteLine($"Added Key: {key}");
                     }
-                    if (collectedKeys.Count == 3 && collectedKeys.Any(k => IsModifier(k)))
+                    if (collectedKeys.Count == 3)
                     {
                         handleKeys(nCode, wParam, lParam);
                     }
@@ -119,7 +129,7 @@ class KeyboardHook
                 else
                 {
                     collectedKeys.Add(key);
-                    Console.WriteLine($"Added modifier: {key}");
+                    Console.WriteLine($"Added Key: {key}");
                 }
 
             }
@@ -129,14 +139,8 @@ class KeyboardHook
         return CallNextHookEx(_hookID, nCode, wParam, lParam);
     }
 
-    // Returns true if the key is a modifier (Control, Shift, Alt)
-    private static bool IsModifier(Keys key)
-    {
-        return key == Keys.LControlKey || key == Keys.RControlKey ||
-               key == Keys.LShiftKey || key == Keys.RShiftKey ||
-               key == Keys.LMenu || key == Keys.RMenu;
-    }
 
+    
     // Replaces the currently typed word (removing it by sending backspaces equal to its length) and pastes the replacement.
     private static void ReplaceWord(string replacement, string deleteuntil)
     {
@@ -174,8 +178,8 @@ class KeyboardHook
         }
         Console.WriteLine("lastWord: " + lastWord);
         // Separate modifier and non-modifier keys.
-        Keys modifier = collectedKeys.FirstOrDefault(k => IsModifier(k));
-        var nonModifiers = collectedKeys.Where(k => !IsModifier(k)).ToList();
+        Keys modifier = collectedKeys.FirstOrDefault(key => Helper.SnippetIOUtil.IsModifier(key));
+        var nonModifiers = collectedKeys.Where(key => !Helper.SnippetIOUtil.IsModifier(key)).ToList();
         // We require exactly two non-modifiers.
         if (nonModifiers.Count == 2)
         {
@@ -195,7 +199,7 @@ class KeyboardHook
                 string compositeKey2 = $"{currentWord}|{candidate2}";
 
                 Console.WriteLine($"Checking composite keys: {compositeKey1} or {compositeKey2}");
-                if (shortcutMap.TryGetValue(compositeKey1, out string? value))
+                if (shortcutMap!.TryGetValue(compositeKey1, out string? value))
                 {
                     Console.WriteLine($"Found mapping for {compositeKey1}");
                     collectedKeys.Clear();
@@ -240,7 +244,11 @@ class KeyboardHook
     #region Observer Operations
     private static void QueryCodeSnippetsList()
     {
-        shortcutMap = Helper.SnippetIOUtil.CreateShortcutMapping(s_SnippetIO.ReadAll().ToList());
+        shortcutMap = Helper.KeyboardHookUtil.CreateShortcutMapping(s_SnippetIO.ReadAll().ToList());
+        if (shortcutMap == null || shortcutMap.Count == 0)
+        {
+            throw new Exception("No snippets found");
+        }
     }
     private static void CodeSnippetsListObserver() => QueryCodeSnippetsList();
     #endregion Observer Operations

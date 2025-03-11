@@ -52,6 +52,7 @@ internal class SnippetIO : SnippetIOApi.ISnippetIO
         if (CodeSnippets.Any(CodeSnippet => CodeSnippet.Id == newSnippet.Id))
             throw new Exception($"A CodeSnippet with the ID: {newSnippet.Id} already exists!");
 
+        Helper.SnippetIOUtil.ValidKeyShortcuts(newSnippet.KeyShortcut);
         XElement CodeSnippetsRootElem = XMLTools.LoadListFromXMLElement(s_Snippetsxml);
 
         CodeSnippetsRootElem.Add(new XElement("CodeSnippet", CodeSnippet.GetCodeSnippetElement(newSnippet)));
@@ -69,6 +70,7 @@ internal class SnippetIO : SnippetIOApi.ISnippetIO
 
         foreach (var newSnippet in addList)
         {
+            Helper.SnippetIOUtil.ValidKeyShortcuts(newSnippet.KeyShortcut);
             if (string.IsNullOrEmpty(newSnippet.Id))
                 throw new Exception("Id cannot be null or empty");
             var existingSnippetElement = CodeSnippetsRootElem
@@ -108,6 +110,8 @@ internal class SnippetIO : SnippetIOApi.ISnippetIO
 
     public void Update(CodeSnippet update)
     {
+        Helper.SnippetIOUtil.ValidKeyShortcuts(update.KeyShortcut);
+
         XElement CodeSnippetsRootElem = XMLTools.LoadListFromXMLElement(s_Snippetsxml);
 
         (CodeSnippetsRootElem.Elements().FirstOrDefault(item => item.Element("Id")!.Value == update.Id) ??
@@ -125,6 +129,8 @@ internal class SnippetIO : SnippetIOApi.ISnippetIO
 
         foreach (var newSnippet in updateList)
         {
+            Helper.SnippetIOUtil.ValidKeyShortcuts(newSnippet.KeyShortcut);
+
             var existingSnippetElement = CodeSnippetsRootElem
                 .Elements("CodeSnippet")
                 .FirstOrDefault(x => x.Element("Id")?.Value == newSnippet.Id.ToString());
@@ -145,11 +151,7 @@ internal class SnippetIO : SnippetIOApi.ISnippetIO
         XElement root = XMLTools.LoadListFromXMLElement(s_Snippetsxml);
 
         XElement? CodeSnippetElement = root.Elements("CodeSnippet")
-            .FirstOrDefault(CodeSnippet => CodeSnippet.Element("Id")!.Value == delete);
-
-        if (CodeSnippetElement == null)
-            throw new Exception($" with ID {delete} does not exist.");
-
+            .FirstOrDefault(CodeSnippet => CodeSnippet.Element("Id")!.Value == delete) ?? throw new Exception($" with ID {delete} does not exist.");
         CodeSnippetElement.Remove();
         XMLTools.SaveListToXMLElement(root, s_Snippetsxml);
         Observers.NotifyItemUpdated(delete);
