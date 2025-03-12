@@ -44,13 +44,10 @@ public partial class MainWindow : Window
         e.Handled = true; // Prevents text from being added to the text box
 
         // cant have more than three keys
-        if (NewShortcutBox.Text.Count(c => c == '+') == 2)
-        {
-            MessageBox.Show("Cannot have more than three keys.", "Cancelled", MessageBoxButton.OK, MessageBoxImage.Information);
-            return;
-        }
+        
         // If the pressed key is a system key or a Windows key, do nothing
-        if (e.Key == Key.System || e.Key == Key.LWin || e.Key == Key.RWin)
+        if ((e.Key == Key.System && e.SystemKey != Key.LeftAlt && e.SystemKey != Key.RightAlt) ||
+            e.Key == Key.LWin || e.Key == Key.RWin)
             return;
 
         // If the pressed key is Backspace, remove the last added shortcut
@@ -66,20 +63,25 @@ public partial class MainWindow : Window
                 shortcutBuilder.Clear(); // If no " + " found, clear the whole string
             }
         }
-        else if(Helper.SnippetIOUtils.IsForbidden((System.Windows.Forms.Keys)KeyInterop.VirtualKeyFromKey(e.Key)))
+        else if(NewShortcutBox.Text.Count(c => c == '+') == 2)
         {
-            MessageBox.Show("Forbidden key.", "Cancelled", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("Cannot have more than three keys.", "Invalid operation", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+        else if (Helper.SnippetIOUtils.IsForbidden((System.Windows.Forms.Keys)KeyInterop.VirtualKeyFromKey(e.Key)))
+        {
+            MessageBox.Show("Forbidden key.", "Invalid operation", MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
         else
         {
-            // מחרוזת המייצגת את המקש הנוכחי
+
             string keyString;
 
-            // טיפול מיוחד במקשי ALT ו-CTRL עם switch
+            // take care of special keys
             switch (e.Key)
             {
-                case Key.System: // ALT מטופל כאן דרך SystemKey
+                case Key.System: // in case SystemKey is alt
                     switch (e.SystemKey)
                     {
                         case Key.LeftAlt:
@@ -99,12 +101,18 @@ public partial class MainWindow : Window
                 case Key.RightCtrl:
                     keyString = "RightCtrl";
                     break;
+                case Key.RightShift:
+                    keyString = "RightShift";
+                    break;
+                case Key.LeftShift:
+                    keyString = "LeftShift";
+                    break;
                 default:
                     keyString = e.Key.ToString();
                     break;
             }
 
-            // למנוע כפילות: נבדוק אם המקש כבר קיים במחרוזת לפני הוספה
+            // dont add a key that is already in the shortcut
             if (!shortcutBuilder.ToString().Contains(keyString))
             {
                 if (shortcutBuilder.Length > 0)
@@ -112,10 +120,15 @@ public partial class MainWindow : Window
 
                 shortcutBuilder.Append(keyString);
             }
+            else
+            {
+                MessageBox.Show("Cannot add the same key twice.", "Invalid operation", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
         }
 
-        // עדכון תיבת הטקסט עם הקיצור החדש, ללא רווחים מיותרים
-        NewShortcutBox.Text = shortcutBuilder.ToString().Trim();
+        // update the text box
+        NewShortcutBox.Text = shortcutBuilder.ToString();
     }
 
 
@@ -238,11 +251,6 @@ public partial class MainWindow : Window
     }
     private void AddButton_Click(object sender, RoutedEventArgs e)
     {
-        if (TextSnippet.Id == "")
-        {
-            MessageBox.Show("Please enter a valid ID", "Invalid ID", MessageBoxButton.OK, MessageBoxImage.Error);
-            return;
-        }
         try
         {
             TextSnippet.Id = CheckForDuplicateId(TextSnippet.Id);
