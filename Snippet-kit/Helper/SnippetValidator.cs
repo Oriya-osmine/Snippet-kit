@@ -22,7 +22,7 @@ public class SnippetValidator
     public static string ValidateUniqueShortcuts(List<CodeSnippet> CodeSnippets, CodeSnippet newSnippet)
     {
         // Ensure KeyShortcut has the correct format
-        newSnippet.KeyShortcut = Helper.SnippetIOUtil.NormalizeKeyShortcut(newSnippet.KeyShortcut);
+        newSnippet.KeyShortcut = Helper.SnippetIOUtils.NormalizeKeyShortcut(newSnippet.KeyShortcut);
 
         var existingSnippet = CodeSnippets.FirstOrDefault(codesnippet =>
             codesnippet.KeyShortcut == newSnippet.KeyShortcut &&

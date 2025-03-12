@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Helper;
 
-public static class KeyboardHookUtil
+public static class KeyboardHookUtils
 {    
     // Create a dictionary mapping composite keys to snippet code.
     // Composite key format: "{wordShortcut}|{normalizedKeyCombo}"
@@ -20,7 +20,7 @@ public static class KeyboardHookUtil
                 !string.IsNullOrWhiteSpace(snippet.KeyShortcut))
             {
                 // Parse the snippet's KeyShortcut into a list of Keys.
-                List<Keys> keyList = Helper.SnippetIOUtil.ParseKeyShortcut(snippet.KeyShortcut).ToList();
+                List<Keys> keyList = Helper.SnippetIOUtils.ParseKeyShortcut(snippet.KeyShortcut).ToList();
                 // Join them with "+" in the order they appear.
                 string normalizedKeyCombo = string.Join("+", keyList);
                 string compositeKey = $"{snippet.WordShortcut.ToLower()}|{normalizedKeyCombo}";

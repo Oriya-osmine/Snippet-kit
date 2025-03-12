@@ -5,10 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 namespace Helper;
 
-public static class SnippetIOUtil
+public static class SnippetIOUtils
 {
     // Parse a KeyShortcut string (e.g. "moifier + key1 + key2") into a list of Keys.
     public static IEnumerable<Keys> ParseKeyShortcut(string keyShortcut)
@@ -78,7 +77,7 @@ public static class SnippetIOUtil
     }
     public static string NormalizeKeyShortcut(string keyShortcut)
     {
-        List<Keys> keys = Helper.SnippetIOUtil.ParseKeyShortcut(keyShortcut).ToList();
+        List<Keys> keys = Helper.SnippetIOUtils.ParseKeyShortcut(keyShortcut).ToList();
 
         if (keys.Count != 3)
         {
@@ -89,7 +88,7 @@ public static class SnippetIOUtil
         int modifierIndex = -1;
         for (int i = 0; i < keys.Count; i++)
         {
-            if (Helper.SnippetIOUtil.IsModifier(keys[i]))
+            if (Helper.SnippetIOUtils.IsModifier(keys[i]))
             {
                 if (modifierIndex != -1) // More than one modifier found
                 {
@@ -123,7 +122,7 @@ public static class SnippetIOUtil
     {
         return key == Keys.Back || key == Keys.CapsLock ||
                key == Keys.Tab || key == Keys.LWin ||
-               key == Keys.RWin || key == Keys.Enter;
+               key == Keys.RWin || key == Keys.Enter || key == Keys.Oemplus;
     }
     // Returns true if the key is a modifier (Control, Shift, Alt)
     public static bool IsModifier(Keys key)
@@ -132,4 +131,5 @@ public static class SnippetIOUtil
                key == Keys.LShiftKey || key == Keys.RShiftKey ||
                key == Keys.LMenu || key == Keys.RMenu;
     }
+
 }

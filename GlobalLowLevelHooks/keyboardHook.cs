@@ -29,7 +29,7 @@ class KeyboardHook
     public static void Run()
     {
         // Load snippets and create mapping
-        shortcutMap = Helper.KeyboardHookUtil.CreateShortcutMapping(s_SnippetIO.ReadAll().ToList());
+        shortcutMap = Helper.KeyboardHookUtils.CreateShortcutMapping(s_SnippetIO.ReadAll().ToList());
         if(shortcutMap == null || shortcutMap.Count == 0)
         {
             throw new Exception("No snippets found");
@@ -65,7 +65,7 @@ class KeyboardHook
             Keys key = (Keys)vkCode;
 
             // When we've collected exactly three unique keys and one is a modifier...
-            if (collectedKeys.Count == 3 && collectedKeys.Any(key => Helper.SnippetIOUtil.IsModifier(key)))
+            if (collectedKeys.Count == 3 && collectedKeys.Any(key => Helper.SnippetIOUtils.IsModifier(key)))
             {
                 HandleKeys(nCode, wParam, lParam);
             }
@@ -98,10 +98,10 @@ class KeyboardHook
                 return CallNextHookEx(_hookID, nCode, wParam, lParam);
             }
             // Always add modifier keys when pressed
-            if (Helper.SnippetIOUtil.IsModifier(key) && !collectedKeys.Contains(key))
+            if (Helper.SnippetIOUtils.IsModifier(key) && !collectedKeys.Contains(key))
             {
                 // Ensure there are no other modifiers already added to the list
-                if (!collectedKeys.Any(key => Helper.SnippetIOUtil.IsModifier(key)))
+                if (!collectedKeys.Any(key => Helper.SnippetIOUtils.IsModifier(key)))
                 {
                     collectedKeys.Add(key);
                     Console.WriteLine($"Added modifier: {key}");
@@ -112,13 +112,13 @@ class KeyboardHook
                 }
             }
             // Add non-modifier keys only if at least one modifier is already pressed
-            else if (!Helper.SnippetIOUtil.IsModifier(key) && !collectedKeys.Contains(key) &&
-                collectedKeys.Count < 3 && !Helper.SnippetIOUtil.IsForbidden(key))
+            else if (!Helper.SnippetIOUtils.IsModifier(key) && !collectedKeys.Contains(key) &&
+                collectedKeys.Count < 3 && !Helper.SnippetIOUtils.IsForbidden(key))
             {
                 if (collectedKeys.Count == 2)
                 {
                     // make sure we arent adding a non modifier key as the third key(and we have a no modifier key)
-                    if (collectedKeys.Any(key => Helper.SnippetIOUtil.IsModifier(key)))
+                    if (collectedKeys.Any(key => Helper.SnippetIOUtils.IsModifier(key)))
                     {
                         collectedKeys.Add(key);
                         Console.WriteLine($"Added Key: {key}");
@@ -176,8 +176,8 @@ class KeyboardHook
         }
         Console.WriteLine("lastWord: " + lastWord);
         // Separate modifier and non-modifier keys.
-        Keys modifier = collectedKeys.FirstOrDefault(key => Helper.SnippetIOUtil.IsModifier(key));
-        var nonModifiers = collectedKeys.Where(key => !Helper.SnippetIOUtil.IsModifier(key)).ToList();
+        Keys modifier = collectedKeys.FirstOrDefault(key => Helper.SnippetIOUtils.IsModifier(key));
+        var nonModifiers = collectedKeys.Where(key => !Helper.SnippetIOUtils.IsModifier(key)).ToList();
         // We require exactly two non-modifiers.
         if (nonModifiers.Count == 2)
         {
@@ -239,7 +239,7 @@ class KeyboardHook
     #region Observer Operations
     private static void QueryCodeSnippetsList()
     {
-        shortcutMap = Helper.KeyboardHookUtil.CreateShortcutMapping(s_SnippetIO.ReadAll().ToList());
+        shortcutMap = Helper.KeyboardHookUtils.CreateShortcutMapping(s_SnippetIO.ReadAll().ToList());
         if (shortcutMap == null || shortcutMap.Count == 0)
         {
             throw new Exception("No snippets found");

@@ -6,7 +6,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 
-namespace SnippetIO;
+namespace SnippetUI;
 
 public partial class MainWindow : Window
 {
@@ -43,6 +43,12 @@ public partial class MainWindow : Window
     {
         e.Handled = true; // Prevents text from being added to the text box
 
+        // cant have more than three keys
+        if (NewShortcutBox.Text.Count(c => c == '+') == 2)
+        {
+            MessageBox.Show("Cannot have more than three keys.", "Cancelled", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
         // If the pressed key is a system key or a Windows key, do nothing
         if (e.Key == Key.System || e.Key == Key.LWin || e.Key == Key.RWin)
             return;
@@ -60,9 +66,14 @@ public partial class MainWindow : Window
                 shortcutBuilder.Clear(); // If no " + " found, clear the whole string
             }
         }
+        else if(Helper.SnippetIOUtils.IsForbidden((System.Windows.Forms.Keys)KeyInterop.VirtualKeyFromKey(e.Key)))
+        {
+            MessageBox.Show("Forbidden key.", "Cancelled", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
         else
         {
-            // If not Backspace, add the pressed key to the shortcut string
+            // If not A forbidden key, add the pressed key to the shortcut string
             if (shortcutBuilder.Length > 0)
                 shortcutBuilder.Append(" + ");
 
@@ -79,16 +90,23 @@ public partial class MainWindow : Window
     {
         var result = MessageBox.Show("Do you want to save All snippets?", "Confirm Save", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
-        if (result == MessageBoxResult.Yes)
+        try
         {
-            string tmpid = SelectedSnippet.Id;
-            s_SnippetIO.UpdateAll(CodeSnippetsList);
-            SetDefaultItems(tmpid);
-            AnimateGridColor(TimeSpan.FromSeconds(1));
+            if (result == MessageBoxResult.Yes)
+            {
+                string tmpid = SelectedSnippet.Id;
+                s_SnippetIO.UpdateAll(CodeSnippetsList);
+                SetDefaultItems(tmpid);
+                AnimateGridColor(TimeSpan.FromSeconds(1));
+            }
+            else
+            {
+                MessageBox.Show("Snippets not saved.", "Cancelled", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
         }
-        else
+        catch (Exception ex)
         {
-            MessageBox.Show("Snippets not saved.", "Cancelled", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
     private void SaveItemButton_Click(object sender, RoutedEventArgs e)
@@ -96,27 +114,33 @@ public partial class MainWindow : Window
         Button button = (sender as Button)!;
 
         string itemId = (string)button.CommandParameter;
-
-        var row = FindParent<DataGridRow>(button!);
-        if (row != null)
+        try
         {
-            var snippetToUpdate = CodeSnippetsList.FirstOrDefault(s => s.Id == itemId);
-            if (snippetToUpdate != null)
+            var row = FindParent<DataGridRow>(button!);
+            if (row != null)
             {
-                var result = MessageBox.Show("Do you want to save the snippet?", "Confirm Save", MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-                if (result == MessageBoxResult.Yes)
+                var snippetToUpdate = CodeSnippetsList.FirstOrDefault(s => s.Id == itemId);
+                if (snippetToUpdate != null)
                 {
-                    s_SnippetIO.Update(snippetToUpdate);
-                    SetDefaultItems(itemId);
-                    AnimateRowColor(row, TimeSpan.FromSeconds(1));
+                    var result = MessageBox.Show("Do you want to save the snippet?", "Confirm Save", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
-                }
-                else
-                {
-                    MessageBox.Show("Snippet not saved.", "Cancelled", MessageBoxButton.OK, MessageBoxImage.Information);
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        s_SnippetIO.Update(snippetToUpdate);
+                        SetDefaultItems(itemId);
+                        AnimateRowColor(row, TimeSpan.FromSeconds(1));
+
+                    }
+                    else
+                    {
+                        MessageBox.Show("Snippet not saved.", "Cancelled", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
                 }
             }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -125,56 +149,74 @@ public partial class MainWindow : Window
         Button button = (sender as Button)!;
 
         string itemId = (string)button.CommandParameter;
-
-        var snippetToDelete = CodeSnippetsList.FirstOrDefault(s => s.Id == itemId);
-        if (snippetToDelete != null)
+        try
         {
-            var result = MessageBox.Show("Do you want to delete the snippet?", "Confirm deletion", MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-            if (result == MessageBoxResult.Yes)
+            var snippetToDelete = CodeSnippetsList.FirstOrDefault(s => s.Id == itemId);
+            if (snippetToDelete != null)
             {
-                SetDefaultItems();
-                s_SnippetIO.Delete(snippetToDelete.Id);
-                QueryCodeSnippetsList();
-                SetDefaultItems();
-            }
-            else
-            {
-                MessageBox.Show("Snippet not deleted.", "Cancelled", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
+                var result = MessageBox.Show("Do you want to delete the snippet?", "Confirm deletion", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
+                if (result == MessageBoxResult.Yes)
+                {
+                    SetDefaultItems();
+                    s_SnippetIO.Delete(snippetToDelete.Id);
+                    QueryCodeSnippetsList();
+                    SetDefaultItems();
+                }
+                else
+                {
+                    MessageBox.Show("Snippet not deleted.", "Cancelled", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
     private void DeleteAllButton_Click(object sender, RoutedEventArgs e)
     {
         var result = MessageBox.Show("Do you want to delete all snippets?", "Confirm deletion", MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-        if (result == MessageBoxResult.Yes)
+        try
         {
-            SetDefaultItems();
-            s_SnippetIO.DeleteAll();
-            QueryCodeSnippetsList();
-            SetDefaultItems();
+            if (result == MessageBoxResult.Yes)
+            {
+                SetDefaultItems();
+                s_SnippetIO.DeleteAll();
+                QueryCodeSnippetsList();
+                SetDefaultItems();
 
+            }
+            else
+            {
+                MessageBox.Show("Snippets not deleted.", "Cancelled", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
         }
-        else
+        catch (Exception ex)
         {
-            MessageBox.Show("Snippets not deleted.", "Cancelled", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
-
     }
     private void AddButton_Click(object sender, RoutedEventArgs e)
     {
-        if(TextSnippet.Id == "")
+        if (TextSnippet.Id == "")
         {
             MessageBox.Show("Please enter a valid ID", "Invalid ID", MessageBoxButton.OK, MessageBoxImage.Error);
             return;
         }
-        TextSnippet.Id = CheckForDuplicateId(TextSnippet.Id);
-        string tmpid = TextSnippet.Id;
-        s_SnippetIO.Add(TextSnippet);
-        SetDefaultItems(tmpid);
+        try
+        {
+            TextSnippet.Id = CheckForDuplicateId(TextSnippet.Id);
+            string tmpid = TextSnippet.Id;
+            s_SnippetIO.Add(TextSnippet);
+            SetDefaultItems(tmpid);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 
+        }
     }
     #endregion Button Events
     #endregion Events
