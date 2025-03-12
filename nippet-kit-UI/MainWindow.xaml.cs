@@ -43,8 +43,6 @@ public partial class MainWindow : Window
     {
         e.Handled = true; // Prevents text from being added to the text box
 
-        // cant have more than three keys
-        
         // If the pressed key is a system key or a Windows key, do nothing
         if ((e.Key == Key.System && e.SystemKey != Key.LeftAlt && e.SystemKey != Key.RightAlt) ||
             e.Key == Key.LWin || e.Key == Key.RWin)
@@ -63,14 +61,15 @@ public partial class MainWindow : Window
                 shortcutBuilder.Clear(); // If no " + " found, clear the whole string
             }
         }
-        else if(NewShortcutBox.Text.Count(c => c == '+') == 2)
+        // cant have more than three keys
+        else if (NewShortcutBox.Text.Count(c => c == '+') == 2)
         {
             MessageBox.Show("Cannot have more than three keys.", "Invalid operation", MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
         else if (Helper.SnippetIOUtils.IsForbidden((System.Windows.Forms.Keys)KeyInterop.VirtualKeyFromKey(e.Key)))
         {
-            MessageBox.Show("Forbidden key.", "Invalid operation", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show($"Forbidden key: {e.Key}.", "Invalid operation", MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
         else
