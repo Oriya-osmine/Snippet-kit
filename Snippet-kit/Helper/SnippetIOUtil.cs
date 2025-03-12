@@ -20,18 +20,53 @@ public static class SnippetIOUtil
             string trimmed = token.Trim();
             switch (trimmed.ToLower())
             {
+                case "leftcontrolkey":
+                case "leftcontrol":
+                case "leftctrlkey":
+                case "lcontrolkey":
+                case "lctrlkey":
                 case "leftctrl":
+                case "lcontrol":
+                case "lctrl":
                 case "ctrl":
                 case "control":
                     keys.Add(Keys.LControlKey);
                     break;
+                case "leftshiftkey":
                 case "leftshift":
+                case "lshiftkey":
+                case "lshift":
                 case "shift":
                     keys.Add(Keys.LShiftKey);
                     break;
+                case "leftaltkey":
                 case "leftalt":
+                case "laltkey":
+                case "lalt":
                 case "alt":
                     keys.Add(Keys.LMenu);
+                    break;
+                case "rightcontrolkey":
+                case "rightcontrol":
+                case "rightctrlkey":
+                case "rcontrolkey":
+                case "rightctrl":
+                case "rctrlkey":
+                case "rcontrol":
+                case "rctrl":
+                    keys.Add(Keys.RControlKey); //shift
+                    break;
+                case "rightshiftkey":
+                case "rightshift":
+                case "rshiftkey":
+                case "rshift":
+                    keys.Add(Keys.RShiftKey);
+                    break;
+                case "rightaltkey":
+                case "rightalt":
+                case "raltkey":
+                case "ralt":
+                    keys.Add(Keys.RMenu);
                     break;
                 default:
                     if (Enum.TryParse(trimmed, true, out Keys parsedKey))

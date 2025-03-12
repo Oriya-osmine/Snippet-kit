@@ -100,7 +100,6 @@ public partial class MainWindow : Window
         var row = FindParent<DataGridRow>(button!);
         if (row != null)
         {
-
             var snippetToUpdate = CodeSnippetsList.FirstOrDefault(s => s.Id == itemId);
             if (snippetToUpdate != null)
             {
@@ -118,7 +117,6 @@ public partial class MainWindow : Window
                     MessageBox.Show("Snippet not saved.", "Cancelled", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
-
         }
     }
 

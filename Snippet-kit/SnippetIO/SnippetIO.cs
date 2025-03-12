@@ -114,8 +114,18 @@ internal class SnippetIO : SnippetIOApi.ISnippetIO
 
         (CodeSnippetsRootElem.Elements().FirstOrDefault(item => item.Element("Id")!.Value == update.Id) ??
             throw new Exception($"A CodeSnippet with the ID: {update.Id} does not exist!")).Remove();
+        List<CodeSnippet> existingSnippets = ReadAll().ToList();
 
-        update.KeyShortcut = Helper.SnippetValidator.ValidateUniqueShortcuts(ReadAll().ToList(), update);
+        var snippetToRemove = existingSnippets.FirstOrDefault(x => x.Id == update.Id);
+        if (snippetToRemove != null)
+        {
+            existingSnippets.Remove(snippetToRemove);
+        }
+        else
+        {
+            throw new Exception($"Invalid ending while Updating where {update} exists");
+        }
+        update.KeyShortcut = Helper.SnippetValidator.ValidateUniqueShortcuts(existingSnippets, update);
         CodeSnippetsRootElem.Add(new XElement("CodeSnippet", CodeSnippet.GetCodeSnippetElement(update)));
         XMLTools.SaveListToXMLElement(CodeSnippetsRootElem, s_Snippetsxml);
 

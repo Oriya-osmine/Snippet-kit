@@ -7,12 +7,6 @@
     <WordShortcut></WordShortcut>
   </CodeSnippet>
   <CodeSnippet>
-    <Id>14</Id>
-    <Code>Hello, Worlddsadauytdsadad! </Code>
-    <KeyShortcut></KeyShortcut>
-    <WordShortcut></WordShortcut>
-  </CodeSnippet>
-  <CodeSnippet>
     <Id>15</Id>
     <Code>Hello, mmmmmmmm! </Code>
     <KeyShortcut></KeyShortcut>
@@ -31,7 +25,13 @@
     {
         SendKeys.SendWait("{BACKSPACE}");
     }</Code>
-    <KeyShortcut>LeftCtrl + R + B</KeyShortcut>
+    <KeyShortcut>LShiftKey + E + N</KeyShortcut>
     <WordShortcut>tt</WordShortcut>
+  </CodeSnippet>
+  <CodeSnippet>
+    <Id>14</Id>
+    <Code>Hello, Worlddsadauytdsadad! </Code>
+    <KeyShortcut>LShiftKey + E + N</KeyShortcut>
+    <WordShortcut></WordShortcut>
   </CodeSnippet>
 </Snippets.xml>
