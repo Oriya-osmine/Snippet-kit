@@ -8,14 +8,64 @@
     <Grid Margin="10">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1.5*" />
-            <!-- List Area -->
+            <!-- List and search Area -->
             <ColumnDefinition Width="3*" />
             <!-- Input Area -->
         </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <!-- Row for search bar -->
+            <RowDefinition Height="45"/>
+            <!-- Row for the snippet grid -->
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <!-- Search Box placed above the DataGrid -->
+        <Border CornerRadius="10" BorderThickness="2" BorderBrush="{StaticResource PrimaryBrush}" 
+        Background="Transparent" Grid.Row="0" Margin="0,0,0,5" Grid.Column="0" >
+            <Grid Width= "{Binding ActualWidth, ElementName=SnippetGridBorder}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="30"/>
+                    <!-- Icon width -->
+                    <ColumnDefinition Width="*"/>
+                    <!-- TextBox expands -->
+                    <ColumnDefinition Width="10"/>
+                    <!-- Extra space -->
+                </Grid.ColumnDefinitions>
+
+                <!-- Search Icon using Segoe Fluent Icons -->
+                <TextBlock x:Name="SearchIcon"
+                   Text="🔍" 
+                   Background="Transparent"
+                   Foreground="Cyan"
+                   FontSize="16"
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Center"
+                   Grid.Column="0"
+                   Opacity="1"
+                   MouseDown="SearchIcon_MouseDown"/>
+
+                 <!-- Search Box -->
+                <TextBox x:Name="SearchBox"
+                    Background="Transparent"
+                    Foreground="{StaticResource SecondaryBrush}"
+                    Height="30"
+                    Text="{Binding SearchText, Mode=TwoWay}"
+                    TextChanged="SearchBox_TextChanged"
+                    IsReadOnly="False" 
+                    Focusable="True"
+                    BorderBrush="Transparent"
+                    BorderThickness="0"
+                    Grid.Column="1"
+                    Padding="5,0,0,0"/>
+             </Grid>
+        </Border>
 
         <!-- Left: Snippet List -->
-        <Border CornerRadius="10" BorderThickness="2" BorderBrush="{StaticResource PrimaryBrush}" Background="Transparent">
+        <Border x:Name="SnippetGridBorder" Grid.Column="0"
+                CornerRadius="10" BorderThickness="2" BorderBrush="{StaticResource PrimaryBrush}" Background="Transparent" Grid.Row="1">
+            
             <DataGrid x:Name="SnippetGrid"
+              Grid.Row="1"
+              Grid.Column="0"
               SelectionMode="Single"
               SelectionUnit="FullRow"
               Background="Transparent"
@@ -61,6 +111,7 @@
 
                     </Style>
 
+                    <!-- Row Style -->
                     <Style TargetType="DataGridRow">
                         <Setter Property="Background" Value="Transparent"/>
                         <Setter Property="Margin" Value="1,2,1,2"/>
@@ -76,10 +127,6 @@
                             </Setter.Value>
                         </Setter>
                     </Style>
-
-
-
-
 
                     <!-- Cell Style -->
                     <Style TargetType="DataGridCell">
@@ -143,7 +190,7 @@
             </DataGrid>
         </Border>
 
-        <StackPanel Grid.Column="1" Margin="20">
+        <StackPanel Grid.Column="1" Margin="20" Grid.RowSpan="2">
             <!-- Snippet Name Input -->
             <TextBlock Text="Snippet Name:" FontSize="16" Margin="0,0,0,5"/>
             <Grid>
@@ -169,11 +216,10 @@
                 Grid.Column="1"/>
             </Grid>
                 
-                <!-- Shortcut Input -->
+                <!-- KeyShortcut Input -->
             <TextBlock Text="KeyShortcut:" FontSize="16" Margin="0,10,0,5"/>
             <Grid>
-
-                <TextBox x:Name="NewShortcutBox"
+                <TextBox x:Name="KeyShortcutBox"
                  Height="35"
                  Background="#444"
                  Foreground="White"
@@ -183,11 +229,25 @@
                  IsReadOnly="True"
                  Text="{Binding TextSnippet.KeyShortcut, Mode=TwoWay}"
                  Grid.Column="0"/>
-                
             </Grid>
-
+            
+            <!-- WordShortcut Content -->
+            <TextBlock Text="WordShortcut:" FontSize="16" Margin="0,10,0,5"/>
+            <TextBox x:Name="WordShortcutBox"
+            Height="35"
+            Background="#444"
+            Foreground="White"
+            BorderThickness="0"
+            Padding="5"
+            FontSize="14"
+            AcceptsReturn="True"
+            TextWrapping="Wrap"
+            Text="{Binding TextSnippet.WordShortcut, Mode=TwoWay}"
+            Grid.Column="0"
+            TextChanged="WordShortcutBox_TextChanged"/>
+       
             <!-- Snippet Content -->
-            <TextBlock Text="Snippet Content:" FontSize="16" Margin="0,15,0,5"/>
+            <TextBlock Text="Snippet Content:" FontSize="16" Margin="0,15,0,5" Grid.Row="0"/>
             <TextBox x:Name="SnippetContentBox"
              Height="200"
              Background="#444"

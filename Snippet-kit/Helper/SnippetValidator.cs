@@ -21,6 +21,8 @@ public class SnippetValidator
     }
     public static string ValidateUniqueShortcuts(List<CodeSnippet> CodeSnippets, CodeSnippet newSnippet)
     {
+        if(newSnippet.WordShortcut.Contains(' '))
+            throw new Exception($"WordShortcut '{newSnippet.WordShortcut}' cannot contain spaces.");
         // Ensure KeyShortcut has the correct format
         newSnippet.KeyShortcut = Helper.SnippetIOUtils.NormalizeKeyShortcut(newSnippet.KeyShortcut);
 

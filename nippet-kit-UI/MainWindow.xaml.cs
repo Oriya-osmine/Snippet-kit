@@ -16,7 +16,7 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        NewShortcutBox.PreviewKeyDown += OnShortcutKeyDown;
+        KeyShortcutBox.PreviewKeyDown += OnShortcutKeyDown;
         QueryCodeSnippetsList();
     }
     #region Events
@@ -62,7 +62,7 @@ public partial class MainWindow : Window
             }
         }
         // cant have more than three keys
-        else if (NewShortcutBox.Text.Count(c => c == '+') == 2)
+        else if (KeyShortcutBox.Text.Count(c => c == '+') == 2)
         {
             MessageBox.Show("Cannot have more than three keys.", "Invalid operation", MessageBoxButton.OK, MessageBoxImage.Information);
             return;
@@ -74,9 +74,7 @@ public partial class MainWindow : Window
         }
         else
         {
-
             string keyString;
-
             // take care of special keys
             switch (e.Key)
             {
@@ -127,12 +125,52 @@ public partial class MainWindow : Window
         }
 
         // update the text box
-        NewShortcutBox.Text = shortcutBuilder.ToString();
+        KeyShortcutBox.Text = shortcutBuilder.ToString();
+    }
+    private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        // Hide the search icon when there is text, show it when empty
+        SearchIcon.Visibility = string.IsNullOrWhiteSpace(SearchBox.Text) ? Visibility.Visible : Visibility.Collapsed;
+
+        if (!string.IsNullOrEmpty(SearchBox.Text))
+        {
+            SnippetGrid.ItemsSource = CodeSnippetsList.Where(snippet =>
+                snippet.Id.Contains(SearchBox.Text, StringComparison.OrdinalIgnoreCase) ||
+                snippet.Code.Contains(SearchBox.Text, StringComparison.OrdinalIgnoreCase) ||
+                snippet.KeyShortcut.Contains(SearchBox.Text, StringComparison.OrdinalIgnoreCase) ||
+                snippet.WordShortcut.Contains(SearchBox.Text, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+        else
+        {
+            SnippetGrid.ItemsSource = CodeSnippetsList;
+        }
     }
 
+    // Clicking the icon focuses the search box
+    private void SearchIcon_MouseDown(object sender, MouseButtonEventArgs e)
+    {
+        SearchBox.Focus();
+    }
 
-
-
+    private void WordShortcutBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        TextSnippet.WordShortcut = WordShortcutBox.Text;
+        if (TextSnippet.WordShortcut.Length > 0)
+        {
+            if (TextSnippet.WordShortcut.Contains(' ')) // Check for spaces
+            {
+                WordShortcutBox.Foreground = Brushes.Red;
+                MessageBox.Show("Word shortcut must be a single word (no spaces).", "Invalid operation", MessageBoxButton.OK, MessageBoxImage.Information);
+                TextSnippet.WordShortcut = TextSnippet.WordShortcut.Replace(" ", "_");
+                WordShortcutBox.Text = TextSnippet.WordShortcut;
+                WordShortcutBox.CaretIndex = WordShortcutBox.Text.Length; // Move cursor to the end
+            }
+            else
+            {
+                WordShortcutBox.Foreground = Brushes.White;
+            }
+        }
+    }
     #endregion Keyboard Events
     #region Button Events
 
@@ -482,9 +520,15 @@ public partial class MainWindow : Window
     }
     #endregion Animations
     #region Propetries
-
     #endregion Propetries
     #region Dependency Properties
+    public string SearchText
+    {
+        get { return (string)GetValue(SearchTextProperty); }
+        set { SetValue(SearchTextProperty, value); }
+    }
+    public static readonly DependencyProperty SearchTextProperty =
+    DependencyProperty.Register("SearchText", typeof(string), typeof(MainWindow), new PropertyMetadata(null));
     public SnippetIO.CodeSnippet TextSnippet
     {
         get { return (SnippetIO.CodeSnippet)GetValue(TextSnippetProperty); }
