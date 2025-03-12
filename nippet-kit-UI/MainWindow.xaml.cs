@@ -41,13 +41,16 @@ public partial class MainWindow : Window
     #region Keyboard Events 
     private void OnShortcutKeyDown(object sender, KeyEventArgs e)
     {
-        e.Handled = true; // Prevents text from being added to the text box
+        e.Handled = true; // מונע הכנסת טקסט לתיבה
 
-        // If the pressed key is a system key or a Windows key, do nothing
-        if (e.Key == Key.System || e.Key == Key.LWin || e.Key == Key.RWin)
+        // אם המקש שנלחץ הוא מקש מערכת (אבל לא ALT) או מקשי Windows – לא עושים כלום
+        if ((e.Key == Key.System && e.SystemKey != Key.LeftAlt && e.SystemKey != Key.RightAlt) ||
+            e.Key == Key.LWin || e.Key == Key.RWin)
+        {
             return;
+        }
 
-        // If the pressed key is Backspace, remove the last added shortcut
+        // מחיקת המקש האחרון אם נלחץ Backspace
         if (e.Key == Key.Back && shortcutBuilder.Length > 0)
         {
             int lastPlusIndex = shortcutBuilder.ToString().LastIndexOf(" + ");
@@ -57,21 +60,59 @@ public partial class MainWindow : Window
             }
             else
             {
-                shortcutBuilder.Clear(); // If no " + " found, clear the whole string
+                shortcutBuilder.Clear();
             }
         }
         else
         {
-            // If not Backspace, add the pressed key to the shortcut string
-            if (shortcutBuilder.Length > 0)
-                shortcutBuilder.Append(" + ");
+            // מחרוזת המייצגת את המקש הנוכחי
+            string keyString;
 
-            shortcutBuilder.Append(e.Key.ToString());
+            // טיפול מיוחד במקשי ALT ו-CTRL עם switch
+            switch (e.Key)
+            {
+                case Key.System: // ALT מטופל כאן דרך SystemKey
+                    switch (e.SystemKey)
+                    {
+                        case Key.LeftAlt:
+                            keyString = "LeftAlt";
+                            break;
+                        case Key.RightAlt:
+                            keyString = "RightAlt";
+                            break;
+                        default:
+                            keyString = e.SystemKey.ToString();
+                            break;
+                    }
+                    break;
+                case Key.LeftCtrl:
+                    keyString = "LeftCtrl";
+                    break;
+                case Key.RightCtrl:
+                    keyString = "RightCtrl";
+                    break;
+                default:
+                    keyString = e.Key.ToString();
+                    break;
+            }
+
+            // למנוע כפילות: נבדוק אם המקש כבר קיים במחרוזת לפני הוספה
+            if (!shortcutBuilder.ToString().Contains(keyString))
+            {
+                if (shortcutBuilder.Length > 0)
+                    shortcutBuilder.Append(" + ");
+
+                shortcutBuilder.Append(keyString);
+            }
         }
 
-        // Update the text box with the new shortcut
-        NewShortcutBox.Text = shortcutBuilder.ToString();
+        // עדכון תיבת הטקסט עם הקיצור החדש, ללא רווחים מיותרים
+        NewShortcutBox.Text = shortcutBuilder.ToString().Trim();
     }
+
+
+
+
     #endregion Keyboard Events
     #region Button Events
 
