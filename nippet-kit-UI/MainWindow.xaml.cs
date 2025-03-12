@@ -73,16 +73,54 @@ public partial class MainWindow : Window
         }
         else
         {
-            // If not A forbidden key, add the pressed key to the shortcut string
-            if (shortcutBuilder.Length > 0)
-                shortcutBuilder.Append(" + ");
+            // מחרוזת המייצגת את המקש הנוכחי
+            string keyString;
 
-            shortcutBuilder.Append(e.Key.ToString());
+            // טיפול מיוחד במקשי ALT ו-CTRL עם switch
+            switch (e.Key)
+            {
+                case Key.System: // ALT מטופל כאן דרך SystemKey
+                    switch (e.SystemKey)
+                    {
+                        case Key.LeftAlt:
+                            keyString = "LeftAlt";
+                            break;
+                        case Key.RightAlt:
+                            keyString = "RightAlt";
+                            break;
+                        default:
+                            keyString = e.SystemKey.ToString();
+                            break;
+                    }
+                    break;
+                case Key.LeftCtrl:
+                    keyString = "LeftCtrl";
+                    break;
+                case Key.RightCtrl:
+                    keyString = "RightCtrl";
+                    break;
+                default:
+                    keyString = e.Key.ToString();
+                    break;
+            }
+
+            // למנוע כפילות: נבדוק אם המקש כבר קיים במחרוזת לפני הוספה
+            if (!shortcutBuilder.ToString().Contains(keyString))
+            {
+                if (shortcutBuilder.Length > 0)
+                    shortcutBuilder.Append(" + ");
+
+                shortcutBuilder.Append(keyString);
+            }
         }
 
-        // Update the text box with the new shortcut
-        NewShortcutBox.Text = shortcutBuilder.ToString();
+        // עדכון תיבת הטקסט עם הקיצור החדש, ללא רווחים מיותרים
+        NewShortcutBox.Text = shortcutBuilder.ToString().Trim();
     }
+
+
+
+
     #endregion Keyboard Events
     #region Button Events
 
