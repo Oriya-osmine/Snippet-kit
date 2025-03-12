@@ -27,6 +27,7 @@ public class SnippetValidator
         newSnippet.KeyShortcut = Helper.SnippetIOUtils.NormalizeKeyShortcut(newSnippet.KeyShortcut);
 
         var existingSnippet = CodeSnippets.FirstOrDefault(codesnippet =>
+            codesnippet.KeyShortcut != "" &&
             codesnippet.KeyShortcut == newSnippet.KeyShortcut &&
             codesnippet.WordShortcut == newSnippet.WordShortcut);
 

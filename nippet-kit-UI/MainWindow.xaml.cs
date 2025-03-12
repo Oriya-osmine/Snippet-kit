@@ -496,9 +496,18 @@ public partial class MainWindow : Window
         {
             SolidColorBrush brush = new(fromColor);
             cell.Background = brush;
-            brush.BeginAnimation(SolidColorBrush.ColorProperty, colorAnimation);
+
+            // Use HandoffBehavior.Compose so that the animation blends with other changes
+            brush.BeginAnimation(SolidColorBrush.ColorProperty, colorAnimation, HandoffBehavior.Compose);
+
+            // Once the animation completes, clear the local value of Background so that the style trigger can apply
+            colorAnimation.Completed += (s, e) =>
+            {
+                cell.ClearValue(DataGridCell.BackgroundProperty);
+            };
         }
     }
+
     private void AnimateGridColor(TimeSpan duration)
     {
         Color fromColor = Color.FromArgb(0xFF, 0x17, 0x17, 0x17);

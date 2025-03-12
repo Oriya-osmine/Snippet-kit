@@ -7,12 +7,6 @@
     <WordShortcut></WordShortcut>
   </CodeSnippet>
   <CodeSnippet>
-    <Id>15</Id>
-    <Code>Hello, mmmmmmmm! </Code>
-    <KeyShortcut></KeyShortcut>
-    <WordShortcut></WordShortcut>
-  </CodeSnippet>
-  <CodeSnippet>
     <Id>16</Id>
     <Code>Hello, 432!      </Code>
     <KeyShortcut>LeftCtrl + B</KeyShortcut>
@@ -32,6 +26,12 @@
     <Id>14</Id>
     <Code>Hello, Worlddsadauytdsadad! </Code>
     <KeyShortcut>LShiftKey + E + N</KeyShortcut>
+    <WordShortcut></WordShortcut>
+  </CodeSnippet>
+  <CodeSnippet>
+    <Id>15</Id>
+    <Code>Hello, mmmmmmmm! &lt;&gt;</Code>
+    <KeyShortcut></KeyShortcut>
     <WordShortcut></WordShortcut>
   </CodeSnippet>
 </Snippets.xml>

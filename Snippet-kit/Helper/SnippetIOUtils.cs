@@ -78,7 +78,7 @@ public static class SnippetIOUtils
     public static string NormalizeKeyShortcut(string keyShortcut)
     {
         List<Keys> keys = Helper.SnippetIOUtils.ParseKeyShortcut(keyShortcut).ToList();
-
+        if(keys.Count == 0) return keyShortcut;
         if (keys.Count != 3)
         {
             throw new Exception("KeyShortcut must contain exactly three keys.");
