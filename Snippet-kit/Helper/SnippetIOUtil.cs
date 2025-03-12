@@ -10,7 +10,7 @@ namespace Helper;
 
 public static class SnippetIOUtil
 {
-    // Parse a KeyShortcut string (e.g. "LeftCtrl + R + B") into a list of Keys.
+    // Parse a KeyShortcut string (e.g. "moifier + key1 + key2") into a list of Keys.
     public static IEnumerable<Keys> ParseKeyShortcut(string keyShortcut)
     {
         var tokens = keyShortcut.Split(new char[] { '+', ',' }, StringSplitOptions.RemoveEmptyEntries);
@@ -41,6 +41,49 @@ public static class SnippetIOUtil
         }
         return keys;
     }
+    public static string NormalizeKeyShortcut(string keyShortcut)
+    {
+        List<Keys> keys = Helper.SnippetIOUtil.ParseKeyShortcut(keyShortcut).ToList();
+
+        if (keys.Count != 3)
+        {
+            throw new Exception("KeyShortcut must contain exactly three keys.");
+        }
+
+        // Find the modifier key and its index
+        int modifierIndex = -1;
+        for (int i = 0; i < keys.Count; i++)
+        {
+            if (Helper.SnippetIOUtil.IsModifier(keys[i]))
+            {
+                if (modifierIndex != -1) // More than one modifier found
+                {
+                    throw new Exception("Only one modifier key is allowed in KeyShortcut.");
+                }
+                modifierIndex = i;
+            }
+        }
+
+        if (modifierIndex == -1) // No modifier found
+        {
+            throw new Exception("KeyShortcut must contain a modifier key.");
+        }
+
+        // Move the modifier to the first position
+        if (modifierIndex != 0)
+        {
+            Keys modifierKey = keys[modifierIndex];
+            keys.RemoveAt(modifierIndex);
+            keys.Insert(0, modifierKey);
+        }
+
+        // Sort the non-modifier keys
+        // This is necessary because the order of non-modifier keys is not important(eg. Ctrl + A + B == Ctrl + B + A)
+        List<Keys> nonModifierKeys = keys.Skip(1).ToList();
+        nonModifierKeys.Sort();
+
+        return $"{keys[0]} + {nonModifierKeys[0]} + {nonModifierKeys[1]}"; // Ensure correct formatting (eg. modifier + Key1 + Key2)
+    }
     public static bool IsForbidden(Keys key)
     {
         return key == Keys.Back || key == Keys.CapsLock ||
@@ -53,27 +96,5 @@ public static class SnippetIOUtil
         return key == Keys.LControlKey || key == Keys.RControlKey ||
                key == Keys.LShiftKey || key == Keys.RShiftKey ||
                key == Keys.LMenu || key == Keys.RMenu;
-    }
-    public static void ValidKeyShortcuts(string KeyShortcut)
-    {
-        List<Keys> keyShortcuts = ParseKeyShortcut(KeyShortcut).ToList();
-
-        int modifierCount = 0;
-        foreach (Keys key in keyShortcuts)
-        {
-            if (Helper.SnippetIOUtil.IsForbidden(key))
-            {
-                throw new Exception($"The key: {key} is forbidden!");
-            }
-
-            if (Helper.SnippetIOUtil.IsModifier(key))
-            {
-                modifierCount++;
-            }
-        }
-        if (modifierCount > 1)
-        {
-            throw new Exception("Keyboard shortcuts can only contain one modifier key.");
-        }
     }
 }

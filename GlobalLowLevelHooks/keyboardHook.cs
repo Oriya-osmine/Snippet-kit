@@ -14,10 +14,12 @@ class KeyboardHook
     // Standard hook variables
     private static LowLevelKeyboardProc _proc = HookCallback;
     private static IntPtr _hookID = IntPtr.Zero;
+
+    // Variables for key press delay and replacement flag
     private static DateTime lastKeyPressTime = DateTime.MinValue;
-    private static int keyPressDelayMs = 100;
-    private static bool isCopying = false;
+    private static readonly int keyPressDelayMs = 100;
     private static bool isReplacing = false;
+
     // Snippet API and mapping dictionary.
     static readonly SnippetIOApi.ISnippetIO s_SnippetIO = SnippetIOApi.Factory.Get();
     // Dictionary: composite key "word|normalizedKeyCombo" -> snippet code.
@@ -65,7 +67,7 @@ class KeyboardHook
             // When we've collected exactly three unique keys and one is a modifier...
             if (collectedKeys.Count == 3 && collectedKeys.Any(key => Helper.SnippetIOUtil.IsModifier(key)))
             {
-                handleKeys(nCode, wParam, lParam);
+                HandleKeys(nCode, wParam, lParam);
             }
             // Always add alphanumeric keys to our word buffer
             if (char.IsLetterOrDigit((char)vkCode) && !Control.ModifierKeys.HasFlag(Keys.Control)
@@ -105,7 +107,7 @@ class KeyboardHook
                     Console.WriteLine($"Added modifier: {key}");
                     if (collectedKeys.Count == 3)
                     {
-                        handleKeys(nCode, wParam, lParam);
+                        HandleKeys(nCode, wParam, lParam);
                     }
                 }
             }
@@ -123,7 +125,7 @@ class KeyboardHook
                     }
                     if (collectedKeys.Count == 3)
                     {
-                        handleKeys(nCode, wParam, lParam);
+                        HandleKeys(nCode, wParam, lParam);
                     }
                 }
                 else
@@ -138,14 +140,11 @@ class KeyboardHook
 
         return CallNextHookEx(_hookID, nCode, wParam, lParam);
     }
-
-
-    
+   
     // Replaces the currently typed word (removing it by sending backspaces equal to its length) and pastes the replacement.
     private static void ReplaceWord(string replacement, string deleteuntil)
     {
         isReplacing = true;
-        // Capture the current length of the word before doing anything
         int wordLength = deleteuntil.Length;
         Console.WriteLine($"Replacing word with length: {wordLength}");
 
@@ -165,12 +164,11 @@ class KeyboardHook
         // Clear the word buffer.
         lastWord.Clear();
         isReplacing = false;
-
     }
 
     
 
-    private static IntPtr handleKeys(int nCode, IntPtr wParam, IntPtr lParam)
+    private static IntPtr HandleKeys(int nCode, IntPtr wParam, IntPtr lParam)
     {
         foreach (var k in collectedKeys)
         {
@@ -203,7 +201,6 @@ class KeyboardHook
                 {
                     Console.WriteLine($"Found mapping for {compositeKey1}");
                     collectedKeys.Clear();
-                    isCopying = true;
                     ReplaceWord(value, currentWord);
                     break;
                 }
@@ -211,7 +208,6 @@ class KeyboardHook
                 {
                     Console.WriteLine($"Found mapping for {compositeKey2}");
                     collectedKeys.Clear();
-                    isCopying = true;
                     ReplaceWord(value1, currentWord);
                     break;
                 }
@@ -229,12 +225,11 @@ class KeyboardHook
                 }
             }
         }
-        while (isCopying && !isReplacing) // backspace to clean the last character 
+        while (!isReplacing) // backspace to clean the last character 
         {
             Thread.Sleep(300);
             Console.WriteLine(lastWord);
             collectedKeys.Clear();
-            isCopying = false;
             SendKeys.SendWait("{BACKSPACE}");
             return CallNextHookEx(_hookID, nCode, wParam, lParam);
         }
