@@ -1,12 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Snippets.xml>
   <CodeSnippet>
-    <Id>12</Id>
-    <Code>Hello, World!</Code>
-    <KeyShortcut></KeyShortcut>
-    <WordShortcut></WordShortcut>
-  </CodeSnippet>
-  <CodeSnippet>
     <Id>16</Id>
     <Code>Hello, 432!      </Code>
     <KeyShortcut>LeftCtrl + B</KeyShortcut>
@@ -31,6 +25,12 @@
   <CodeSnippet>
     <Id>15</Id>
     <Code>Hello, mmmmmmmm! &lt;&gt;</Code>
+    <KeyShortcut></KeyShortcut>
+    <WordShortcut></WordShortcut>
+  </CodeSnippet>
+  <CodeSnippet>
+    <Id>12</Id>
+    <Code>Hello, World!</Code>
     <KeyShortcut></KeyShortcut>
     <WordShortcut></WordShortcut>
   </CodeSnippet>

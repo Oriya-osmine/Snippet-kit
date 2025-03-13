@@ -500,7 +500,7 @@ public partial class MainWindow : Window
     private void AnimateRowColor(DataGridRow row, TimeSpan duration)
     {
         Color fromColor = Color.FromArgb(0xFF, 0x17, 0x17, 0x17);
-        Color toColor = (Color)ColorConverter.ConvertFromString("MediumPurple");
+        Color toColor = (Color)Application.Current.Resources["SecondaryColor"];
 
         ColorAnimation colorAnimation = new()
         {
@@ -531,7 +531,7 @@ public partial class MainWindow : Window
     private void AnimateGridColor(TimeSpan duration)
     {
         Color fromColor = Color.FromArgb(0xFF, 0x17, 0x17, 0x17);
-        Color toColor = (Color)ColorConverter.ConvertFromString("MediumPurple");
+        Color toColor = (Color)Application.Current.Resources["SecondaryColor"];
 
         ColorAnimation colorAnimation = new()
         {
@@ -593,6 +593,5 @@ public partial class MainWindow : Window
 
     private void CodeSnippetsListObserver() => QueryCodeSnippetsList();
     #endregion Observer Operations
-
 
 }

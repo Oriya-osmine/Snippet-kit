@@ -43,7 +43,7 @@
                    Opacity="1"
                    MouseDown="SearchIcon_MouseDown"/>
 
-                 <!-- Search Box -->
+                <!-- Search Box -->
                 <TextBox x:Name="SearchBox"
                     Background="Transparent"
                     Foreground="{StaticResource SecondaryBrush}"
@@ -57,13 +57,13 @@
                     Grid.Column="1"
                     FontSize="20"
                     Padding="5,0,0,0"/>
-             </Grid>
+            </Grid>
         </Border>
 
         <!-- Left: Snippet List -->
         <Border x:Name="SnippetGridBorder" Grid.Column="0"
                 CornerRadius="10" BorderThickness="2" BorderBrush="{StaticResource PrimaryBrush}" Background="Transparent" Grid.Row="1">
-            
+
             <DataGrid x:Name="SnippetGrid"
               Grid.Row="1"
               Grid.Column="0"
@@ -95,7 +95,7 @@
                         <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
                         <Setter Property="Foreground" Value="{StaticResource SecondaryBrush}"/>
                         <Setter Property="BorderBrush" Value="Transparent"/>
-                        <Setter Property="Margin" Value="1,2,1,2"/>
+                        <Setter Property="Margin" Value="2,2,2,2"/>
                         <Setter Property="HorizontalContentAlignment" Value="Center"/>
                         <Setter Property="Template">
                             <Setter.Value>
@@ -115,7 +115,7 @@
                     <!-- Row Style -->
                     <Style TargetType="DataGridRow">
                         <Setter Property="Background" Value="Transparent"/>
-                        <Setter Property="Margin" Value="1,2,1,2"/>
+                        <Setter Property="Margin" Value="2,2,2,2"/>
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="DataGridRow">
@@ -163,12 +163,12 @@
                     <DataGridTemplateColumn Width="Auto">
                         <DataGridTemplateColumn.Header>
                             <Button Content="❌" Click="DeleteAllButton_Click" Padding="5"
-                                    Margin="5" Background="Red" Foreground="White"/>
+                                    Margin="5" Background="{StaticResource DeleteIconBrush}" Foreground="White"/>
                         </DataGridTemplateColumn.Header>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Button Content="🗑️" Click="DeleteItemButton_Click"
-                        Padding="5" Margin="5" Background="Red" Foreground="White" CommandParameter="{Binding Id}"/>
+                        Padding="5" Margin="5" Background="{StaticResource DeleteIconBrush}" Foreground="White" CommandParameter="{Binding Id}"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -177,13 +177,13 @@
                     <DataGridTemplateColumn Width="Auto">
                         <DataGridTemplateColumn.Header>
                             <Button Content="💾" Click="SaveAllButton_Click" Padding="5"
-                                    Background="Green" Foreground="White" />
+                                    Background="{StaticResource SaveIconBrush}" Foreground="White" />
                         </DataGridTemplateColumn.Header>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Button Content="💾" Click="SaveItemButton_Click"
                         Padding="5" Margin="5"
-                        Background="Green" Foreground="White" CommandParameter="{Binding Id}"/>
+                        Background="{StaticResource SaveIconBrush}" Foreground="White" CommandParameter="{Binding Id}"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -191,74 +191,110 @@
             </DataGrid>
         </Border>
 
-        <StackPanel Grid.Column="1" Margin="20" Grid.RowSpan="2">
-            <!-- Snippet Name Input -->
-            <TextBlock Text="Snippet Name:" FontSize="16" Margin="0,0,0,5"/>
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <TextBox x:Name="SnippetNameBox"
-                    Height="35"
-                    Background="#444"
-                    Foreground="{StaticResource SecondaryBrush}"
-                    BorderThickness="0"
-                    Padding="5"
-                    FontSize="14"
-                    Text="{Binding TextSnippet.Id, Mode=TwoWay}"/>
-                <Button Content="➕ ADD"
-                Click="AddButton_Click"
-                Padding="5"
-                Margin="5,0,0,0"
-                Background="Black"
-                Foreground="{StaticResource SecondaryBrush}"
-                FontWeight="Bold"
-                Grid.Column="1"/>
-            </Grid>
-                
-                <!-- KeyShortcut Input -->
-            <TextBlock Text="KeyShortcut:" FontSize="16" Margin="0,10,0,5"/>
-            <Grid>
-                <TextBox x:Name="KeyShortcutBox"
+        <Border x:Name="SnippetInformationBorder" Grid.Column="1" Padding="10" Margin="10, 0, 10, 0"
+        CornerRadius="10" BorderThickness="2" BorderBrush="{StaticResource PrimaryBrush}" Background="Transparent" Grid.RowSpan="2">
+            <Grid Grid.Column="1" Grid.RowSpan="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <!-- "Snippet Name" -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- Snippet Name Input -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- "KeyShortcut" -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- KeyShortcut Input -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- "WordShortcut" -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- WordShortcut Input -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- "Snippet Content" -->
+                    <RowDefinition Height="*"/>
+                    <!-- Snippet Content (Expands) -->
+                </Grid.RowDefinitions>
+
+                <!-- Snippet Name -->
+                <TextBlock Text="Snippet Name:" FontSize="16" Margin="0,0,0,5" Grid.Row="0"/>
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Border x:Name="SnippetNameBoxBorder" CornerRadius="10" BorderThickness="2"
+                BorderBrush="{StaticResource PrimaryBrush}" Background="{StaticResource PrimaryBrush}">
+                        <TextBox x:Name="SnippetNameBox"
+                     Height="35"
+                     Background="Transparent"
+                     Foreground="{StaticResource SecondaryBrush}"
+                     BorderThickness="0"
+                     FontSize="14"
+                     Text="{Binding TextSnippet.Id, Mode=TwoWay}"/>
+                    </Border>
+                    <Border x:Name="AddSnippetButtonBorder" CornerRadius="10" BorderThickness="2" Padding="5" Margin="5,0,0,0"
+                            BorderBrush="{StaticResource PrimaryBrush}" Background="Black" Grid.Column="1">
+                        <Button Content="➕ ADD"
+                            Click="AddButton_Click"
+                            BorderBrush="Transparent"
+                            BorderThickness="0"
+                            Background="Transparent"
+                            Foreground="{StaticResource SecondaryBrush}"
+                            FontWeight="Bold"
+                            Grid.Column="1"/>
+                    </Border>
+                </Grid>
+                    
+                <!-- KeyShortcut -->
+                <TextBlock Text="KeyShortcut:" FontSize="16" Margin="0,10,0,5" Grid.Row="2"/>
+                <Border x:Name="SnippetKeyShortcutBoxBorder" CornerRadius="10" BorderThickness="2"
+            BorderBrush="{StaticResource PrimaryBrush}" Background="{StaticResource PrimaryBrush}"
+            Grid.Row="3">
+                    <TextBox x:Name="KeyShortcutBox"
                  Height="35"
-                 Background="#444"
+                 Background="Transparent"
                  Foreground="{StaticResource SecondaryBrush}"
                  BorderThickness="0"
                  Padding="5"
                  FontSize="14"
                  IsReadOnly="True"
-                 Text="{Binding TextSnippet.KeyShortcut, Mode=TwoWay}"
-                 Grid.Column="0"/>
+                 Text="{Binding TextSnippet.KeyShortcut, Mode=TwoWay}"/>
+                </Border>
+
+                <!-- WordShortcut -->
+                <TextBlock Text="WordShortcut:" FontSize="16" Margin="0,10,0,5" Grid.Row="4"/>
+                <Border x:Name="SnippetWordShortcutBoxBorder" CornerRadius="10" BorderThickness="2"
+            BorderBrush="{StaticResource PrimaryBrush}" Background="{StaticResource PrimaryBrush}"
+            Grid.Row="5">
+                    <TextBox x:Name="WordShortcutBox"
+                 Height="35"
+                 Background="Transparent"
+                 Foreground="{StaticResource SecondaryBrush}"
+                 BorderThickness="0"
+                 Padding="5"
+                 FontSize="14"
+                 AcceptsReturn="True"
+                 TextWrapping="Wrap"
+                 Text="{Binding TextSnippet.WordShortcut, Mode=TwoWay}"
+                 TextChanged="WordShortcutBox_TextChanged"/>
+                </Border>
+
+                <!-- Snippet Content -->
+                <TextBlock Text="Snippet Content:" FontSize="16" Margin="0,15,0,5" Grid.Row="6"/>
+                <Border x:Name="SnippetContentBoxBorder" CornerRadius="10" BorderThickness="2"
+            BorderBrush="{StaticResource PrimaryBrush}" Background="{StaticResource PrimaryBrush}"
+            Grid.Row="7">
+                    <TextBox x:Name="SnippetContentBox"
+                 Background="Transparent"
+                 Foreground="{StaticResource SecondaryBrush}"
+                 BorderThickness="0"
+                 Padding="5"
+                 FontSize="14"
+                 AcceptsReturn="True"
+                 TextWrapping="Wrap"
+                 Text="{Binding TextSnippet.Code, Mode=TwoWay}"
+                 VerticalAlignment="Stretch"
+                 HorizontalAlignment="Stretch"/>
+                </Border>
             </Grid>
-            
-            <!-- WordShortcut Content -->
-            <TextBlock Text="WordShortcut:" FontSize="16" Margin="0,10,0,5"/>
-            <TextBox x:Name="WordShortcutBox"
-            Height="35"
-            Background="#444"
-            Foreground="{StaticResource SecondaryBrush}"            
-            BorderThickness="0"
-            Padding="5"
-            FontSize="14"
-            AcceptsReturn="True"
-            TextWrapping="Wrap"
-            Text="{Binding TextSnippet.WordShortcut, Mode=TwoWay}"
-            Grid.Column="0"
-            TextChanged="WordShortcutBox_TextChanged"/>
-       
-            <!-- Snippet Content -->
-            <TextBlock Text="Snippet Content:" FontSize="16" Margin="0,15,0,5" Grid.Row="0"/>
-            <TextBox x:Name="SnippetContentBox"
-             Height="200"
-             Background="#444"
-             Foreground="{StaticResource SecondaryBrush}"
-             BorderThickness="0"
-             Padding="5"
-             FontSize="14"
-             AcceptsReturn="True"
-             TextWrapping="Wrap"
-             Text="{Binding TextSnippet.Code, Mode=TwoWay}"/>
-        </StackPanel>
+        </Border>
     </Grid>
 </Window>
