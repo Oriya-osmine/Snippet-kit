@@ -130,6 +130,8 @@ public static class SnippetIOUtils
     {
         return key == Keys.LControlKey || key == Keys.RControlKey ||
                key == Keys.LShiftKey || key == Keys.RShiftKey ||
+               key == Keys.ShiftKey || key == Keys.ControlKey ||
+               key == Keys.Menu ||
                key == Keys.LMenu || key == Keys.RMenu;
     }
 

@@ -1,12 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Snippets.xml>
   <CodeSnippet>
-    <Id>16</Id>
-    <Code>Hello, 432!      </Code>
-    <KeyShortcut>LeftCtrl + B</KeyShortcut>
-    <WordShortcut>t</WordShortcut>
-  </CodeSnippet>
-  <CodeSnippet>
     <Id>1</Id>
     <Code>
 	for (int i = 0; i &lt; wordLength; i++)
@@ -15,6 +9,12 @@
     }</Code>
     <KeyShortcut>LShiftKey + E + N</KeyShortcut>
     <WordShortcut>tt</WordShortcut>
+  </CodeSnippet>
+  <CodeSnippet>
+    <Id>12</Id>
+    <Code>Hello, World!</Code>
+    <KeyShortcut></KeyShortcut>
+    <WordShortcut></WordShortcut>
   </CodeSnippet>
   <CodeSnippet>
     <Id>14</Id>
@@ -29,9 +29,15 @@
     <WordShortcut></WordShortcut>
   </CodeSnippet>
   <CodeSnippet>
-    <Id>12</Id>
-    <Code>Hello, World!</Code>
+    <Id>16</Id>
+    <Code>Hello, 432!      </Code>
     <KeyShortcut></KeyShortcut>
-    <WordShortcut></WordShortcut>
+    <WordShortcut>t</WordShortcut>
+  </CodeSnippet>
+  <CodeSnippet>
+    <Id>Wait</Id>
+    <Code>I'm Waiting for you..</Code>
+    <KeyShortcut>LShiftKey + E + V</KeyShortcut>
+    <WordShortcut>i'm</WordShortcut>
   </CodeSnippet>
 </Snippets.xml>

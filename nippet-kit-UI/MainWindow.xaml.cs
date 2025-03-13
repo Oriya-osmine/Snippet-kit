@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using Helper;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -68,6 +69,14 @@ public partial class MainWindow : Window
                 WordShortcutBox.Text = TextSnippet.WordShortcut;
                 WordShortcutBox.CaretIndex = WordShortcutBox.Text.Length; // Move cursor to the end
             }
+            else if (!TextSnippet.WordShortcut.All(char.IsLower)) // Check for non-lowercase letters
+            {
+                AnimateinvalidTextInputColor(WordShortcutBox, TimeSpan.FromSeconds(1));
+                MessageBox.Show("Word shortcut must contain only lowercase letters.", "Invalid operation", MessageBoxButton.OK, MessageBoxImage.Information);
+                TextSnippet.WordShortcut = TextSnippet.WordShortcut.ToLower();
+                WordShortcutBox.Text = TextSnippet.WordShortcut;
+                WordShortcutBox.CaretIndex = WordShortcutBox.Text.Length; // Move cursor to the end
+            }
         }
     }
     #endregion onChange Events
@@ -75,9 +84,12 @@ public partial class MainWindow : Window
     private void OnShortcutKeyDown(object sender, KeyEventArgs e)
     {
         e.Handled = true; // Prevents text from being added to the text box
-        shortcutBuilder = new StringBuilder(KeyShortcutBox.Text);
+        shortcutBuilder = new(KeyShortcutBox.Text);
+
+        var pressedKey = (System.Windows.Forms.Keys)KeyInterop.VirtualKeyFromKey(e.Key);
+
         // If the pressed key is a system key or a Windows key, do nothing
-        if (e.Key != Key.Back && Helper.SnippetIOUtils.IsForbidden((System.Windows.Forms.Keys)KeyInterop.VirtualKeyFromKey(e.Key)))
+        if (e.Key != Key.Back && Helper.SnippetIOUtils.IsForbidden(pressedKey))
         {
             AnimateinvalidTextInputColor(KeyShortcutBox, TimeSpan.FromSeconds(1));
             MessageBox.Show($"Forbidden key: {e.Key}.", "Invalid operation", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -97,32 +109,20 @@ public partial class MainWindow : Window
                 shortcutBuilder.Clear(); // If no " + " found, clear the whole string
             }
         }
-        // cant have more than three keys
+        // Ensure there are no more than three keys in the shortcut
         else if (KeyShortcutBox.Text.Count(c => c == '+') == 2)
         {
             AnimateinvalidTextInputColor(KeyShortcutBox, TimeSpan.FromSeconds(1));
             MessageBox.Show("Cannot have more than three keys.", "Invalid operation", MessageBoxButton.OK, MessageBoxImage.Information);
             return;
-        }       
+        }
         else
         {
             string keyString;
-            // take care of special keys
             switch (e.Key)
             {
-                case Key.System: // in case SystemKey is alt
-                    switch (e.SystemKey)
-                    {
-                        case Key.LeftAlt:
-                            keyString = "LeftAlt";
-                            break;
-                        case Key.RightAlt:
-                            keyString = "RightAlt";
-                            break;
-                        default:
-                            keyString = e.SystemKey.ToString();
-                            break;
-                    }
+                case Key.System: // In case SystemKey is Alt
+                    keyString = e.SystemKey == Key.LeftAlt ? "LeftAlt" : e.SystemKey == Key.RightAlt ? "RightAlt" : e.SystemKey.ToString();
                     break;
                 case Key.LeftCtrl:
                     keyString = "LeftCtrl";
@@ -130,18 +130,30 @@ public partial class MainWindow : Window
                 case Key.RightCtrl:
                     keyString = "RightCtrl";
                     break;
-                case Key.RightShift:
-                    keyString = "RightShift";
-                    break;
                 case Key.LeftShift:
                     keyString = "LeftShift";
+                    break;
+                case Key.RightShift:
+                    keyString = "RightShift";
                     break;
                 default:
                     keyString = e.Key.ToString();
                     break;
             }
 
-            // dont add a key that is already in the shortcut
+            StringBuilder tshortcutBuilder = new(shortcutBuilder.ToString());
+            tshortcutBuilder.Append(" + ");
+            tshortcutBuilder.Append(keyString);
+
+            List<System.Windows.Forms.Keys> keys = Helper.SnippetIOUtils.ParseKeyShortcut(tshortcutBuilder.ToString()).ToList();
+            bool hasTwoModifier = keys.Count(key => Helper.SnippetIOUtils.IsModifier(key)) == 2;
+            if (hasTwoModifier)
+            {
+                AnimateinvalidTextInputColor(KeyShortcutBox, TimeSpan.FromSeconds(1));
+                MessageBox.Show("Cannot have more than one modifier key.", "Invalid operation", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+            // Don't add a key that is already in the shortcut
             if (!shortcutBuilder.ToString().Contains(keyString))
             {
                 if (shortcutBuilder.Length > 0)
@@ -157,9 +169,11 @@ public partial class MainWindow : Window
             }
         }
 
-        // update the text box
+        // Update the text box
         KeyShortcutBox.Text = shortcutBuilder.ToString();
     }
+
+
 
 
     // Clicking the icon focuses the search box
