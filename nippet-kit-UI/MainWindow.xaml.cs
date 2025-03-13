@@ -33,9 +33,42 @@ public partial class MainWindow : Window
     }
     #endregion Window Events
     #region onChange Events
+    private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        // Hide the search icon when there is text, show it when empty
+        SearchIcon.Visibility = string.IsNullOrWhiteSpace(SearchBox.Text) ? Visibility.Visible : Visibility.Collapsed;
+
+        if (!string.IsNullOrEmpty(SearchBox.Text))
+        {
+            SnippetGrid.ItemsSource = CodeSnippetsList.Where(snippet =>
+                snippet.Id.Contains(SearchBox.Text, StringComparison.OrdinalIgnoreCase) ||
+                snippet.Code.Contains(SearchBox.Text, StringComparison.OrdinalIgnoreCase) ||
+                snippet.KeyShortcut.Contains(SearchBox.Text, StringComparison.OrdinalIgnoreCase) ||
+                snippet.WordShortcut.Contains(SearchBox.Text, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+        else
+        {
+            SnippetGrid.ItemsSource = CodeSnippetsList;
+        }
+    }
     private void CodeSnippetsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         ChangeItemInList();
+    }
+    private void WordShortcutBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        TextSnippet.WordShortcut = WordShortcutBox.Text;
+        if (TextSnippet.WordShortcut.Length > 0)
+        {
+            if (TextSnippet.WordShortcut.Contains(' ')) // Check for spaces
+            {
+                AnimateinvalidTextInputColor(WordShortcutBox, TimeSpan.FromSeconds(1));
+                MessageBox.Show("Word shortcut must be a single word (no spaces).", "Invalid operation", MessageBoxButton.OK, MessageBoxImage.Information);
+                TextSnippet.WordShortcut = TextSnippet.WordShortcut.Replace(" ", "_");
+                WordShortcutBox.Text = TextSnippet.WordShortcut;
+                WordShortcutBox.CaretIndex = WordShortcutBox.Text.Length; // Move cursor to the end
+            }
+        }
     }
     #endregion onChange Events
     #region Keyboard Events 
@@ -44,9 +77,12 @@ public partial class MainWindow : Window
         e.Handled = true; // Prevents text from being added to the text box
 
         // If the pressed key is a system key or a Windows key, do nothing
-        if ((e.Key == Key.System && e.SystemKey != Key.LeftAlt && e.SystemKey != Key.RightAlt) ||
-            e.Key == Key.LWin || e.Key == Key.RWin)
+        if (Helper.SnippetIOUtils.IsForbidden((System.Windows.Forms.Keys)KeyInterop.VirtualKeyFromKey(e.Key)))
+        {
+            AnimateinvalidTextInputColor(KeyShortcutBox, TimeSpan.FromSeconds(1));
+            MessageBox.Show($"Forbidden key: {e.Key}.", "Invalid operation", MessageBoxButton.OK, MessageBoxImage.Information);
             return;
+        }
 
         // If the pressed key is Backspace, remove the last added shortcut
         if (e.Key == Key.Back && shortcutBuilder.Length > 0)
@@ -64,14 +100,10 @@ public partial class MainWindow : Window
         // cant have more than three keys
         else if (KeyShortcutBox.Text.Count(c => c == '+') == 2)
         {
+            AnimateinvalidTextInputColor(KeyShortcutBox, TimeSpan.FromSeconds(1));
             MessageBox.Show("Cannot have more than three keys.", "Invalid operation", MessageBoxButton.OK, MessageBoxImage.Information);
             return;
-        }
-        else if (Helper.SnippetIOUtils.IsForbidden((System.Windows.Forms.Keys)KeyInterop.VirtualKeyFromKey(e.Key)))
-        {
-            MessageBox.Show($"Forbidden key: {e.Key}.", "Invalid operation", MessageBoxButton.OK, MessageBoxImage.Information);
-            return;
-        }
+        }       
         else
         {
             string keyString;
@@ -119,6 +151,7 @@ public partial class MainWindow : Window
             }
             else
             {
+                AnimateinvalidTextInputColor(KeyShortcutBox, TimeSpan.FromSeconds(1));
                 MessageBox.Show("Cannot add the same key twice.", "Invalid operation", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
@@ -127,24 +160,7 @@ public partial class MainWindow : Window
         // update the text box
         KeyShortcutBox.Text = shortcutBuilder.ToString();
     }
-    private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
-    {
-        // Hide the search icon when there is text, show it when empty
-        SearchIcon.Visibility = string.IsNullOrWhiteSpace(SearchBox.Text) ? Visibility.Visible : Visibility.Collapsed;
 
-        if (!string.IsNullOrEmpty(SearchBox.Text))
-        {
-            SnippetGrid.ItemsSource = CodeSnippetsList.Where(snippet =>
-                snippet.Id.Contains(SearchBox.Text, StringComparison.OrdinalIgnoreCase) ||
-                snippet.Code.Contains(SearchBox.Text, StringComparison.OrdinalIgnoreCase) ||
-                snippet.KeyShortcut.Contains(SearchBox.Text, StringComparison.OrdinalIgnoreCase) ||
-                snippet.WordShortcut.Contains(SearchBox.Text, StringComparison.OrdinalIgnoreCase)).ToList();
-        }
-        else
-        {
-            SnippetGrid.ItemsSource = CodeSnippetsList;
-        }
-    }
 
     // Clicking the icon focuses the search box
     private void SearchIcon_MouseDown(object sender, MouseButtonEventArgs e)
@@ -152,25 +168,7 @@ public partial class MainWindow : Window
         SearchBox.Focus();
     }
 
-    private void WordShortcutBox_TextChanged(object sender, TextChangedEventArgs e)
-    {
-        TextSnippet.WordShortcut = WordShortcutBox.Text;
-        if (TextSnippet.WordShortcut.Length > 0)
-        {
-            if (TextSnippet.WordShortcut.Contains(' ')) // Check for spaces
-            {
-                WordShortcutBox.Foreground = Brushes.Red;
-                MessageBox.Show("Word shortcut must be a single word (no spaces).", "Invalid operation", MessageBoxButton.OK, MessageBoxImage.Information);
-                TextSnippet.WordShortcut = TextSnippet.WordShortcut.Replace(" ", "_");
-                WordShortcutBox.Text = TextSnippet.WordShortcut;
-                WordShortcutBox.CaretIndex = WordShortcutBox.Text.Length; // Move cursor to the end
-            }
-            else
-            {
-                WordShortcutBox.Foreground = Brushes.White;
-            }
-        }
-    }
+    
     #endregion Keyboard Events
     #region Button Events
 
@@ -477,6 +475,28 @@ public partial class MainWindow : Window
 
     #endregion Helpers
     #region Animations
+
+    private void AnimateinvalidTextInputColor(TextBox box, TimeSpan duration)
+    {
+        Color fromColor = (Color)Application.Current.Resources["SecondaryColor"];
+        Color toColor = (Color)ColorConverter.ConvertFromString("Red");
+
+        ColorAnimation colorAnimation = new()
+        {
+            From = fromColor,
+            To = toColor,
+            Duration = duration,
+            AutoReverse = true,
+            RepeatBehavior = new RepeatBehavior(1)
+        };
+
+        SolidColorBrush brush = new(fromColor);
+        box.Foreground = brush;
+
+        // Use HandoffBehavior.Compose so that the animation blends with other changes
+        brush.BeginAnimation(SolidColorBrush.ColorProperty, colorAnimation, HandoffBehavior.Compose);
+    }
+
     private void AnimateRowColor(DataGridRow row, TimeSpan duration)
     {
         Color fromColor = Color.FromArgb(0xFF, 0x17, 0x17, 0x17);
@@ -525,6 +545,10 @@ public partial class MainWindow : Window
         SolidColorBrush brush = new(fromColor);
         SnippetGrid.Background = brush;
         brush.BeginAnimation(SolidColorBrush.ColorProperty, colorAnimation);
+        colorAnimation.Completed += (s, e) =>
+        {
+            SnippetGrid.ClearValue(DataGrid.BackgroundProperty);
+        };
 
     }
     #endregion Animations

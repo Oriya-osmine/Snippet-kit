@@ -122,7 +122,8 @@ public static class SnippetIOUtils
     {
         return key == Keys.Back || key == Keys.CapsLock ||
                key == Keys.Tab || key == Keys.LWin ||
-               key == Keys.RWin || key == Keys.Enter || key == Keys.Oemplus;
+               key == Keys.RWin || key == Keys.Enter ||
+               key == Keys.Oemplus;
     }
     // Returns true if the key is a modifier (Control, Shift, Alt)
     public static bool IsModifier(Keys key)

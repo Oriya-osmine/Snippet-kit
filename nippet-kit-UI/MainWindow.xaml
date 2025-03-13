@@ -55,6 +55,7 @@
                     BorderBrush="Transparent"
                     BorderThickness="0"
                     Grid.Column="1"
+                    FontSize="20"
                     Padding="5,0,0,0"/>
              </Grid>
         </Border>
@@ -201,7 +202,7 @@
                 <TextBox x:Name="SnippetNameBox"
                     Height="35"
                     Background="#444"
-                    Foreground="White"
+                    Foreground="{StaticResource SecondaryBrush}"
                     BorderThickness="0"
                     Padding="5"
                     FontSize="14"
@@ -210,8 +211,8 @@
                 Click="AddButton_Click"
                 Padding="5"
                 Margin="5,0,0,0"
-                Background="Green"
-                Foreground="White"
+                Background="Black"
+                Foreground="{StaticResource SecondaryBrush}"
                 FontWeight="Bold"
                 Grid.Column="1"/>
             </Grid>
@@ -222,7 +223,7 @@
                 <TextBox x:Name="KeyShortcutBox"
                  Height="35"
                  Background="#444"
-                 Foreground="White"
+                 Foreground="{StaticResource SecondaryBrush}"
                  BorderThickness="0"
                  Padding="5"
                  FontSize="14"
@@ -236,7 +237,7 @@
             <TextBox x:Name="WordShortcutBox"
             Height="35"
             Background="#444"
-            Foreground="White"
+            Foreground="{StaticResource SecondaryBrush}"            
             BorderThickness="0"
             Padding="5"
             FontSize="14"
@@ -251,7 +252,7 @@
             <TextBox x:Name="SnippetContentBox"
              Height="200"
              Background="#444"
-             Foreground="White"
+             Foreground="{StaticResource SecondaryBrush}"
              BorderThickness="0"
              Padding="5"
              FontSize="14"
