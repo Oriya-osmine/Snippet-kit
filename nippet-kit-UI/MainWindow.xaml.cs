@@ -75,9 +75,9 @@ public partial class MainWindow : Window
     private void OnShortcutKeyDown(object sender, KeyEventArgs e)
     {
         e.Handled = true; // Prevents text from being added to the text box
-
+        shortcutBuilder = new StringBuilder(KeyShortcutBox.Text);
         // If the pressed key is a system key or a Windows key, do nothing
-        if (Helper.SnippetIOUtils.IsForbidden((System.Windows.Forms.Keys)KeyInterop.VirtualKeyFromKey(e.Key)))
+        if (e.Key != Key.Back && Helper.SnippetIOUtils.IsForbidden((System.Windows.Forms.Keys)KeyInterop.VirtualKeyFromKey(e.Key)))
         {
             AnimateinvalidTextInputColor(KeyShortcutBox, TimeSpan.FromSeconds(1));
             MessageBox.Show($"Forbidden key: {e.Key}.", "Invalid operation", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -85,7 +85,7 @@ public partial class MainWindow : Window
         }
 
         // If the pressed key is Backspace, remove the last added shortcut
-        if (e.Key == Key.Back && shortcutBuilder.Length > 0)
+        if (e.Key == Key.Back)
         {
             int lastPlusIndex = shortcutBuilder.ToString().LastIndexOf(" + ");
             if (lastPlusIndex != -1)
